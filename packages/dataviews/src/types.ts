@@ -543,12 +543,20 @@ export type NormalizedCombinedFormField< Item > = CombinedFormField< Item > & {
 	Edit?: ComponentType< DataFormCombinedEditProps< Item > >;
 };
 
+export type FormField =
+	| string
+	| {
+			layout?: 'regular' | 'panel' | 'group';
+			field?: string;
+			fields?: FormField[];
+	  };
+
 /**
  * The form configuration.
  */
 export type Form< Item > = {
 	type?: 'regular' | 'panel';
-	fields?: string[];
+	fields?: FormField[];
 	/**
 	 * The fields to combine.
 	 */

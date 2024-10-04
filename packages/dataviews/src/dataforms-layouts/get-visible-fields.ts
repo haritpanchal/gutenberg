@@ -6,11 +6,12 @@ import type {
 	Field,
 	CombinedFormField,
 	NormalizedCombinedFormField,
+	FormField,
 } from '../types';
 
 export function getVisibleFields< Item >(
 	fields: Field< Item >[],
-	formFields: string[] = [],
+	formFields: FormField[] = [],
 	combinedFields?: CombinedFormField< Item >[]
 ): Field< Item >[] {
 	const visibleFields: Array<
