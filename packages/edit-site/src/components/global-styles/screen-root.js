@@ -14,9 +14,8 @@ import {
 } from '@wordpress/components';
 import { isRTL, __ } from '@wordpress/i18n';
 import { chevronLeft, chevronRight } from '@wordpress/icons';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
-import { privateApis as blockEditorPrivateApis } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -25,13 +24,10 @@ import { IconWithCurrentColor } from './icon-with-current-color';
 import { NavigationButtonAsItem } from './navigation-button';
 import RootMenu from './root-menu';
 import PreviewStyles from './preview-styles';
+import { store as editSiteStore } from '../../store';
 import { unlock } from '../../lock-unlock';
 
-const { useGlobalStyle } = unlock( blockEditorPrivateApis );
-
 function ScreenRoot() {
-	const [ customCSS ] = useGlobalStyle( 'css' );
-
 	const { hasVariations, canEditCSS } = useSelect( ( select ) => {
 		const {
 			getEntityRecord,
@@ -51,6 +47,13 @@ function ScreenRoot() {
 			canEditCSS: !! globalStyles?._links?.[ 'wp:action-edit-css' ],
 		};
 	}, [] );
+
+	const { setEditorCanvasContainerView } = unlock(
+		useDispatch( editSiteStore )
+	);
+	const loadAdditionalCSSView = () => {
+		setEditorCanvasContainerView( 'global-styles-css' );
+	};
 
 	return (
 		<Card
@@ -115,7 +118,7 @@ function ScreenRoot() {
 				</ItemGroup>
 			</CardBody>
 
-			{ canEditCSS && !! customCSS && (
+			{ canEditCSS && (
 				<>
 					<CardDivider />
 					<CardBody>
@@ -130,7 +133,10 @@ function ScreenRoot() {
 							) }
 						</Spacer>
 						<ItemGroup>
-							<NavigationButtonAsItem path="/css">
+							<NavigationButtonAsItem
+								path="/css"
+								onClick={ loadAdditionalCSSView }
+							>
 								<HStack justify="space-between">
 									<FlexItem>
 										{ __( 'Additional CSS' ) }
