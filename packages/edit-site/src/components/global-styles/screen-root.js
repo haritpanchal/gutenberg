@@ -14,7 +14,13 @@ import {
 import { isRTL, __ } from '@wordpress/i18n';
 import { chevronLeft, chevronRight } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { useEffect } from '@wordpress/element';
 import { store as coreStore } from '@wordpress/core-data';
+import { privateApis as routerPrivateApis } from '@wordpress/router';
+import {
+	store as editorStore,
+	privateApis as editorPrivateApis,
+} from '@wordpress/editor';
 
 /**
  * Internal dependencies
@@ -26,32 +32,99 @@ import PreviewStyles from './preview-styles';
 import { store as editSiteStore } from '../../store';
 import { unlock } from '../../lock-unlock';
 
+const { interfaceStore } = unlock( editorPrivateApis );
+const { useLocation } = unlock( routerPrivateApis );
+
 function ScreenRoot() {
-	const { hasVariations, canEditCSS } = useSelect( ( select ) => {
-		const {
-			getEntityRecord,
-			__experimentalGetCurrentGlobalStylesId,
-			__experimentalGetCurrentThemeGlobalStylesVariations,
-		} = select( coreStore );
+	const { params } = useLocation();
+	const { canvas = 'view' } = params;
+	const {
+		hasVariations,
+		canEditCSS,
+		shouldClearCanvasContainerView,
+		isStyleBookOpened,
+		hasRevisions,
+		isRevisionsOpened,
+		isRevisionsStyleBookOpened,
+	} = useSelect(
+		( select ) => {
+			const {
+				getEntityRecord,
+				__experimentalGetCurrentGlobalStylesId,
+				__experimentalGetCurrentThemeGlobalStylesVariations,
+			} = select( coreStore );
 
-		const globalStylesId = __experimentalGetCurrentGlobalStylesId();
-		const globalStyles = globalStylesId
-			? getEntityRecord( 'root', 'globalStyles', globalStylesId )
-			: undefined;
+			const globalStylesId = __experimentalGetCurrentGlobalStylesId();
+			const globalStyles = globalStylesId
+				? getEntityRecord( 'root', 'globalStyles', globalStylesId )
+				: undefined;
 
-		return {
-			hasVariations:
-				!! __experimentalGetCurrentThemeGlobalStylesVariations()
-					?.length,
-			canEditCSS: !! globalStyles?._links?.[ 'wp:action-edit-css' ],
-		};
-	}, [] );
+			const { getActiveComplementaryArea } = select( interfaceStore );
+			const { getEditorCanvasContainerView } = unlock(
+				select( editSiteStore )
+			);
+			const canvasContainerView = getEditorCanvasContainerView();
+			const _isVisualEditorMode =
+				'visual' === select( editorStore ).getEditorMode();
+			const _isEditCanvasMode = 'edit' === canvas;
+
+			return {
+				hasVariations:
+					!! __experimentalGetCurrentThemeGlobalStylesVariations()
+						?.length,
+				canEditCSS: !! globalStyles?._links?.[ 'wp:action-edit-css' ],
+				isStyleBookOpened: 'style-book' === canvasContainerView,
+				shouldClearCanvasContainerView:
+					'edit-site/global-styles' !==
+						getActiveComplementaryArea( 'core' ) ||
+					! _isVisualEditorMode ||
+					! _isEditCanvasMode,
+				hasRevisions:
+					!! globalStyles?._links?.[ 'version-history' ]?.[ 0 ]
+						?.count,
+				isRevisionsStyleBookOpened:
+					'global-styles-revisions:style-book' ===
+					canvasContainerView,
+				isRevisionsOpened:
+					'global-styles-revisions' === canvasContainerView,
+			};
+		},
+		[ canvas ]
+	);
 
 	const { setEditorCanvasContainerView } = unlock(
 		useDispatch( editSiteStore )
 	);
 	const loadAdditionalCSSView = () => {
 		setEditorCanvasContainerView( 'global-styles-css' );
+	};
+
+	useEffect( () => {
+		if ( shouldClearCanvasContainerView ) {
+			setEditorCanvasContainerView( undefined );
+		}
+	}, [ shouldClearCanvasContainerView, setEditorCanvasContainerView ] );
+
+	const { setIsListViewOpened } = useDispatch( editorStore );
+
+	const loadRevisionsView = () => {
+		setIsListViewOpened( false );
+		if ( isRevisionsStyleBookOpened ) {
+			setEditorCanvasContainerView( 'style-book' );
+			return;
+		}
+		if ( isRevisionsOpened ) {
+			setEditorCanvasContainerView( undefined );
+			return;
+		}
+
+		if ( isStyleBookOpened ) {
+			setEditorCanvasContainerView(
+				'global-styles-revisions:style-book'
+			);
+		} else {
+			setEditorCanvasContainerView( 'global-styles-revisions' );
+		}
 	};
 
 	return (
@@ -106,6 +179,23 @@ function ScreenRoot() {
 						>
 							<HStack justify="space-between">
 								<FlexItem>{ __( 'Additional CSS' ) }</FlexItem>
+								<IconWithCurrentColor
+									icon={
+										isRTL() ? chevronLeft : chevronRight
+									}
+								/>
+							</HStack>
+						</NavigationButtonAsItem>
+					) }
+					{ hasRevisions && (
+						<NavigationButtonAsItem
+							path="/revisions"
+							onClick={ loadRevisionsView }
+						>
+							<HStack justify="space-between">
+								<FlexItem>
+									{ __( 'Styles revisions' ) }
+								</FlexItem>
 								<IconWithCurrentColor
 									icon={
 										isRTL() ? chevronLeft : chevronRight
