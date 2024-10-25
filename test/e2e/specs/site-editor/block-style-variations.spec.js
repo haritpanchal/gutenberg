@@ -194,7 +194,7 @@ test.describe( 'Block Style Variations', () => {
 		// The initial revision styles should match the editor canvas.
 		await siteEditorBlockStyleVariations.openStylesPanel();
 		const revisionsButton = page.getByRole( 'button', {
-			name: 'Revisions',
+			name: 'Styles revisions',
 			exact: true,
 		} );
 		await revisionsButton.click();
