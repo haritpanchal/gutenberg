@@ -81,6 +81,8 @@ test.describe( 'Style Revisions', () => {
 			.getByRole( 'option', { name: 'Color: Luminous vivid amber' } )
 			.click( { force: true } );
 
+		await page.click( 'role=button[name="Back"]' );
+
 		await page.getByRole( 'button', { name: 'Styles revisions' } ).click();
 
 		const unSavedButton = page.getByRole( 'option', {
@@ -140,7 +142,7 @@ test.describe( 'Style Revisions', () => {
 			.click();
 
 		await navigationContainer
-			.getByRole( 'button', { name: 'Styles revisions' } )
+			.getByRole( 'button', { name: 'Revisions' } )
 			.click();
 
 		await expect(
@@ -183,7 +185,7 @@ test.describe( 'Style Revisions', () => {
 
 		// Deactivating revisions view while the style book is open should close revisions,
 		// but not the style book.
-		await revisionsButton.click();
+		await page.click( 'role=button[name="Back"]' );
 
 		// Style book is still visible but...
 		await expect(
