@@ -151,6 +151,9 @@ export function FormPanelField< Item >( {
 										data={ data }
 										field={ nestedField }
 										onChange={ onChange }
+										hideLabelFromVision={
+											childrenFields.length < 2
+										}
 									/>
 								) }
 							</DataFormLayout>
