@@ -22,8 +22,6 @@ export function DataFormProvider< Item >( {
 	fields,
 	children,
 }: React.PropsWithChildren< { fields: NormalizedField< Item >[] } > ) {
-	// const context = useContext( DataFormContext );
-
 	const getFieldDefinition = useCallback(
 		( field: string ) => {
 			return fields.find(
