@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { createContext } from '@wordpress/element';
+import { createContext, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -24,11 +24,14 @@ export function DataFormProvider< Item >( {
 }: React.PropsWithChildren< { fields: NormalizedField< Item >[] } > ) {
 	// const context = useContext( DataFormContext );
 
-	function getFieldDefinition( field: string ) {
-		return fields.find(
-			( fieldDefinition ) => fieldDefinition.id === field
-		);
-	}
+	const getFieldDefinition = useCallback(
+		( field: string ) => {
+			return fields.find(
+				( fieldDefinition ) => fieldDefinition.id === field
+			);
+		},
+		[ fields ]
+	);
 
 	return (
 		<DataFormContext.Provider value={ { getFieldDefinition } }>

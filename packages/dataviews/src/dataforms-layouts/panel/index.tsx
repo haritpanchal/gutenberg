@@ -9,8 +9,8 @@ import {
 	Dropdown,
 	Button,
 } from '@wordpress/components';
-import { useState, useMemo } from '@wordpress/element';
-import { sprintf, __, _x } from '@wordpress/i18n';
+import { sprintf, __ } from '@wordpress/i18n';
+import { useState, useMemo, useContext } from '@wordpress/element';
 import { closeSmall } from '@wordpress/icons';
 
 /**
@@ -18,12 +18,14 @@ import { closeSmall } from '@wordpress/icons';
  */
 import { normalizeFields } from '../../normalize-fields';
 import { getVisibleFields } from '../get-visible-fields';
-import type { DataFormProps, NormalizedField } from '../../types';
+import type { DataFormProps } from '../../types';
 import FormFieldVisibility from '../../components/form-field-visibility';
+import DataFormContext from '../../components/dataform-context';
+import { DataFormLayout } from '../data-form-layout';
 
 interface FormFieldProps< Item > {
 	data: Item;
-	field: NormalizedField< Item >;
+	field: FormField;
 	onChange: ( value: any ) => void;
 }
 
@@ -57,11 +59,21 @@ function DropdownHeader( {
 	);
 }
 
-function FormField< Item >( {
+export function FormPanelField< Item >( {
 	data,
 	field,
 	onChange,
 }: FormFieldProps< Item > ) {
+	const { getFieldDefinition } = useContext( DataFormContext );
+	const fieldDefinition = getFieldDefinition(
+		typeof field === 'string' ? field : field.id
+	);
+	const childrenFields = useMemo( () => {
+		if ( typeof field !== 'string' && field.fields ) {
+			return field.fields;
+		}
+		return [ field ];
+	}, [ field ] );
 	// Use internal state instead of a ref to make sure that the component
 	// re-renders when the popover's anchor updates.
 	const [ popoverAnchor, setPopoverAnchor ] = useState< HTMLElement | null >(
@@ -80,13 +92,17 @@ function FormField< Item >( {
 		[ popoverAnchor ]
 	);
 
+	if ( ! fieldDefinition ) {
+		return null;
+	}
+
 	return (
 		<HStack
 			ref={ setPopoverAnchor }
 			className="dataforms-layouts-panel__field"
 		>
 			<div className="dataforms-layouts-panel__field-label">
-				{ field.label }
+				{ fieldDefinition.label }
 			</div>
 			<div>
 				<Dropdown
@@ -106,27 +122,38 @@ function FormField< Item >( {
 							aria-expanded={ isOpen }
 							aria-label={ sprintf(
 								// translators: %s: Field name.
-								_x( 'Edit %s', 'field' ),
-								field.label
+								__( 'Edit %s' ),
+								fieldDefinition.label
 							) }
 							onClick={ onToggle }
 						>
-							<field.render item={ data } />
+							<fieldDefinition.render item={ data } />
 						</Button>
 					) }
 					renderContent={ ( { onClose } ) => (
 						<>
 							<DropdownHeader
-								title={ field.label }
+								title={ fieldDefinition.label }
 								onClose={ onClose }
 							/>
-							<field.Edit
-								key={ field.id }
+							<DataFormLayout
 								data={ data }
-								field={ field }
+								fields={ childrenFields }
 								onChange={ onChange }
-								hideLabelFromVision
-							/>
+							>
+								{ ( FieldLayout, nestedField ) => (
+									<FieldLayout
+										key={
+											typeof nestedField === 'string'
+												? nestedField
+												: nestedField.id
+										}
+										data={ data }
+										field={ nestedField }
+										onChange={ onChange }
+									/>
+								) }
+							</DataFormLayout>
 						</>
 					) }
 				/>
