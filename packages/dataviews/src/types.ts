@@ -548,7 +548,7 @@ export type FormField =
 	| {
 			id: string;
 			layout?: 'regular' | 'panel' | 'inline';
-			field?: string;
+			field?: FormField;
 			fields?: FormField[];
 	  };
 
