@@ -163,7 +163,7 @@ function ScreenRoot() {
 			<CardDivider />
 
 			<CardBody>
-				<ItemGroup isBordered isSeparated>
+				<ItemGroup isSeparated>
 					<NavigationButtonAsItem path="/blocks">
 						<HStack justify="space-between">
 							<FlexItem>{ __( 'Blocks' ) }</FlexItem>
