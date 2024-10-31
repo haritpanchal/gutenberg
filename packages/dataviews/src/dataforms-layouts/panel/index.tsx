@@ -62,9 +62,7 @@ export default function FormPanelField< Item >( {
 	onChange,
 }: FormFieldProps< Item > ) {
 	const { getFieldDefinition } = useContext( DataFormContext );
-	const fieldDefinition = getFieldDefinition(
-		typeof field === 'string' ? field : field.id
-	);
+	const fieldDefinition = getFieldDefinition( field );
 	const childrenFields = useMemo( () => {
 		if ( typeof field !== 'string' && field.fields ) {
 			return field.fields;

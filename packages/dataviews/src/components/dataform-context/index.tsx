@@ -6,11 +6,11 @@ import { createContext, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import type { NormalizedField } from '../../types';
+import type { FormField, NormalizedField } from '../../types';
 
 type DataFormContextType< Item > = {
 	getFieldDefinition: (
-		field: string
+		field: FormField
 	) => NormalizedField< Item > | undefined;
 };
 
@@ -23,10 +23,22 @@ export function DataFormProvider< Item >( {
 	children,
 }: React.PropsWithChildren< { fields: NormalizedField< Item >[] } > ) {
 	const getFieldDefinition = useCallback(
-		( field: string ) => {
-			return fields.find(
-				( fieldDefinition ) => fieldDefinition.id === field
+		( field: FormField ) => {
+			const fieldId = typeof field === 'string' ? field : field.id;
+
+			const definition = fields.find(
+				( fieldDefinition ) => fieldDefinition.id === fieldId
 			);
+			if ( definition ) {
+				return {
+					...definition,
+					label:
+						typeof field !== 'string' && field.label
+							? field.label
+							: definition.label,
+				};
+			}
+			return undefined;
 		},
 		[ fields ]
 	);

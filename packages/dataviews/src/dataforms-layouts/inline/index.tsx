@@ -22,9 +22,7 @@ export default function FormInlineField< Item >( {
 	onChange,
 }: FormFieldProps< Item > ) {
 	const { getFieldDefinition } = useContext( DataFormContext );
-	const fieldDefinition = getFieldDefinition(
-		typeof field === 'string' ? field : field.id
-	);
+	const fieldDefinition = getFieldDefinition( field );
 	if ( ! fieldDefinition ) {
 		return null;
 	}
