@@ -129,7 +129,7 @@ export const Default = ( {
 			'date',
 			'birthdate',
 		],
-	} as Form< SamplePost >;
+	} as Form;
 
 	return (
 		<DataForm< SamplePost >
@@ -175,7 +175,7 @@ const CombinedFieldsComponent = ( {
 			'order',
 			'author',
 		],
-	} as Form< SamplePost >;
+	} as Form;
 
 	return (
 		<DataForm< SamplePost >

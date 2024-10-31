@@ -51,14 +51,8 @@ export default function FormRegular< Item >( {
 }: DataFormProps< Item > ) {
 	const visibleFields = useMemo(
 		() =>
-			normalizeFields(
-				getVisibleFields< Item >(
-					fields,
-					form.fields,
-					form.combinedFields
-				)
-			),
-		[ fields, form.fields, form.combinedFields ]
+			normalizeFields( getVisibleFields< Item >( fields, form.fields ) ),
+		[ fields, form.fields ]
 	);
 
 	return (

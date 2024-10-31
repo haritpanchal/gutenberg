@@ -18,7 +18,7 @@ import { closeSmall } from '@wordpress/icons';
  */
 import { normalizeFields } from '../../normalize-fields';
 import { getVisibleFields } from '../get-visible-fields';
-import type { DataFormProps } from '../../types';
+import type { DataFormProps, FormField } from '../../types';
 import FormFieldVisibility from '../../components/form-field-visibility';
 import DataFormContext from '../../components/dataform-context';
 import { DataFormLayout } from '../data-form-layout';
@@ -173,14 +173,8 @@ export default function FormPanel< Item >( {
 }: DataFormProps< Item > ) {
 	const visibleFields = useMemo(
 		() =>
-			normalizeFields(
-				getVisibleFields< Item >(
-					fields,
-					form.fields,
-					form.combinedFields
-				)
-			),
-		[ fields, form.fields, form.combinedFields ]
+			normalizeFields( getVisibleFields< Item >( fields, form.fields ) ),
+		[ fields, form.fields ]
 	);
 
 	return (
@@ -192,9 +186,9 @@ export default function FormPanel< Item >( {
 						data={ data }
 						field={ field }
 					>
-						<FormField
+						<FormPanelField
 							data={ data }
-							field={ field }
+							field={ field.id }
 							onChange={ onChange }
 						/>
 					</FormFieldVisibility>

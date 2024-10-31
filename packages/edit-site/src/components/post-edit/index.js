@@ -72,6 +72,11 @@ function PostEditForm( { postType, postId } ) {
 			fields: [
 				'featured_media',
 				'title',
+				{
+					id: 'status',
+					layout: 'panel',
+					fields: [ 'status', 'password' ],
+				},
 				'status_and_visibility',
 				'author',
 				'date',
@@ -83,15 +88,6 @@ function PostEditForm( { postType, postId } ) {
 					ids.length === 1 ||
 					fieldsWithBulkEditSupport.includes( field )
 			),
-			combinedFields: [
-				{
-					id: 'status_and_visibility',
-					label: __( 'Status & Visibility' ),
-					children: [ 'status', 'password' ],
-					direction: 'vertical',
-					render: ( { item } ) => item.status,
-				},
-			],
 		} ),
 		[ ids ]
 	);

@@ -2,12 +2,14 @@
  * WordPress dependencies
  */
 import { __experimentalVStack as VStack } from '@wordpress/components';
+import { useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import type { FormField } from '../types';
 import { getFormFieldLayout } from './index';
+import DataFormContext from '../components/dataform-context';
 
 export function DataFormLayout< Item >( {
 	defaultLayout,
@@ -30,6 +32,8 @@ export function DataFormLayout< Item >( {
 		field: FormField
 	) => React.JSX.Element;
 } ) {
+	const { getFieldDefinition } = useContext( DataFormContext );
+
 	return (
 		<VStack spacing={ 2 }>
 			{ fields.map( ( field ) => {
@@ -43,13 +47,24 @@ export function DataFormLayout< Item >( {
 					return null;
 				}
 
+				const fieldId = typeof field === 'string' ? field : field.id;
+				const fieldDefinition = getFieldDefinition( fieldId );
+
+				if (
+					! fieldDefinition ||
+					( fieldDefinition.isVisible &&
+						! fieldDefinition.isVisible( data ) )
+				) {
+					return null;
+				}
+
 				if ( children ) {
 					return children( FieldLayout, field );
 				}
 
 				return (
 					<FieldLayout
-						key={ typeof field === 'string' ? field : field.id }
+						key={ fieldId }
 						data={ data }
 						field={ field }
 						onChange={ onChange }

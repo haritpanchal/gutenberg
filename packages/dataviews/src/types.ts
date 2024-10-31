@@ -527,46 +527,25 @@ export interface SupportedLayouts {
 	table?: Omit< ViewTable, 'type' >;
 }
 
-export interface CombinedFormField< Item > extends CombinedField {
-	render?: ComponentType< { item: Item } >;
-}
-
-export interface DataFormCombinedEditProps< Item > {
-	field: NormalizedCombinedFormField< Item >;
-	data: Item;
-	onChange: ( value: Record< string, any > ) => void;
-	hideLabelFromVision?: boolean;
-}
-
-export type NormalizedCombinedFormField< Item > = CombinedFormField< Item > & {
-	fields: NormalizedField< Item >[];
-	Edit?: ComponentType< DataFormCombinedEditProps< Item > >;
-};
-
 export type FormField =
 	| string
 	| {
 			id: string;
 			layout?: 'regular' | 'panel' | 'inline';
-			field?: FormField;
 			fields?: FormField[];
 	  };
 
 /**
  * The form configuration.
  */
-export type Form< Item > = {
+export type Form = {
 	type?: 'regular' | 'panel' | 'inline';
 	fields?: FormField[];
-	/**
-	 * The fields to combine.
-	 */
-	combinedFields?: CombinedFormField< Item >[];
 };
 
 export interface DataFormProps< Item > {
 	data: Item;
 	fields: Field< Item >[];
-	form: Form< Item >;
+	form: Form;
 	onChange: ( value: Record< string, any > ) => void;
 }

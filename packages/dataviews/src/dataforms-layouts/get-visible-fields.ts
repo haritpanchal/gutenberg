@@ -1,27 +1,13 @@
 /**
  * Internal dependencies
  */
-import { normalizeCombinedFields } from '../normalize-fields';
-import type {
-	Field,
-	CombinedFormField,
-	NormalizedCombinedFormField,
-	FormField,
-} from '../types';
+import type { Field, FormField } from '../types';
 
 export function getVisibleFields< Item >(
 	fields: Field< Item >[],
-	formFields: FormField[] = [],
-	combinedFields?: CombinedFormField< Item >[]
+	formFields: FormField[] = []
 ): Field< Item >[] {
-	const visibleFields: Array<
-		Field< Item > | NormalizedCombinedFormField< Item >
-	> = [ ...fields ];
-	if ( combinedFields ) {
-		visibleFields.push(
-			...normalizeCombinedFields( combinedFields, fields )
-		);
-	}
+	const visibleFields: Array< Field< Item > > = [ ...fields ];
 	return formFields
 		.map( ( fieldId ) =>
 			visibleFields.find( ( { id } ) => id === fieldId )
