@@ -186,11 +186,15 @@ const CombinedFieldsComponent = ( {
 	const form = {
 		fields: [
 			'title',
-			{
-				id: 'status',
-				layout: 'panel',
-				fields: [ 'status', 'password' ],
-			},
+			...( type === 'regular'
+				? [ 'status', 'password' ]
+				: [
+						{
+							id: 'status',
+							layout: 'panel',
+							fields: [ 'status', 'password' ],
+						},
+				  ] ),
 			'order',
 			'author',
 		],
