@@ -1,24 +1,9 @@
 /**
  * Internal dependencies
  */
-import FormRegular, { FormRegularField } from './regular';
-import FormPanel, { FormPanelField } from './panel';
-import { FormInlineField } from './inline';
-
-const FORM_LAYOUTS = [
-	{
-		type: 'regular',
-		component: FormRegular,
-	},
-	{
-		type: 'panel',
-		component: FormPanel,
-	},
-];
-
-export function getFormLayout( type: string ) {
-	return FORM_LAYOUTS.find( ( layout ) => layout.type === type );
-}
+import FormRegularField from './regular';
+import FormPanelField from './panel';
+import FormInlineField from './inline';
 
 const FORM_FIELD_LAYOUTS = [
 	{

@@ -16,7 +16,7 @@ interface FormFieldProps< Item > {
 	onChange: ( value: any ) => void;
 }
 
-export function FormInlineField< Item >( {
+export default function FormInlineField< Item >( {
 	data,
 	field,
 	onChange,

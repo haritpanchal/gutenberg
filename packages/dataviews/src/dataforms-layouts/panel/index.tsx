@@ -16,10 +16,7 @@ import { closeSmall } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import { normalizeFields } from '../../normalize-fields';
-import { getVisibleFields } from '../get-visible-fields';
-import type { DataFormProps, FormField } from '../../types';
-import FormFieldVisibility from '../../components/form-field-visibility';
+import type { FormField } from '../../types';
 import DataFormContext from '../../components/dataform-context';
 import { DataFormLayout } from '../data-form-layout';
 
@@ -59,7 +56,7 @@ function DropdownHeader( {
 	);
 }
 
-export function FormPanelField< Item >( {
+export default function FormPanelField< Item >( {
 	data,
 	field,
 	onChange,
@@ -162,38 +159,5 @@ export function FormPanelField< Item >( {
 				/>
 			</div>
 		</HStack>
-	);
-}
-
-export default function FormPanel< Item >( {
-	data,
-	fields,
-	form,
-	onChange,
-}: DataFormProps< Item > ) {
-	const visibleFields = useMemo(
-		() =>
-			normalizeFields( getVisibleFields< Item >( fields, form.fields ) ),
-		[ fields, form.fields ]
-	);
-
-	return (
-		<VStack spacing={ 2 }>
-			{ visibleFields.map( ( field ) => {
-				return (
-					<FormFieldVisibility
-						key={ field.id }
-						data={ data }
-						field={ field }
-					>
-						<FormPanelField
-							data={ data }
-							field={ field.id }
-							onChange={ onChange }
-						/>
-					</FormFieldVisibility>
-				);
-			} ) }
-		</VStack>
 	);
 }
