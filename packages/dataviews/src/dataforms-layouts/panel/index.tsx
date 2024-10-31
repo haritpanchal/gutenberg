@@ -9,7 +9,7 @@ import {
 	Dropdown,
 	Button,
 } from '@wordpress/components';
-import { sprintf, __ } from '@wordpress/i18n';
+import { sprintf, __, _x } from '@wordpress/i18n';
 import { useState, useMemo, useContext } from '@wordpress/element';
 import { closeSmall } from '@wordpress/icons';
 
@@ -121,7 +121,7 @@ export default function FormPanelField< Item >( {
 							aria-expanded={ isOpen }
 							aria-label={ sprintf(
 								// translators: %s: Field name.
-								__( 'Edit %s' ),
+								_x( 'Edit %s', 'field' ),
 								fieldDefinition.label
 							) }
 							onClick={ onToggle }
