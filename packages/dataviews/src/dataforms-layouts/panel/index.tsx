@@ -64,7 +64,11 @@ export default function FormPanelField< Item >( {
 	const { getFieldDefinition } = useContext( DataFormContext );
 	const fieldDefinition = getFieldDefinition( field );
 	const childrenFields = useMemo( () => {
-		if ( typeof field !== 'string' && field.fields ) {
+		if (
+			typeof field !== 'string' &&
+			field.layout === 'panel' &&
+			field.fields
+		) {
 			return field.fields;
 		}
 		return [ field ];

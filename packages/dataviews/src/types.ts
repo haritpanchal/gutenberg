@@ -527,14 +527,29 @@ export interface SupportedLayouts {
 	table?: Omit< ViewTable, 'type' >;
 }
 
+interface BaseFieldLayout {
+	id: string;
+	label?: string;
+}
+
+export interface RegularFieldLayout extends BaseFieldLayout {
+	layout: 'regular';
+}
+
+export interface PanelFieldLayout extends BaseFieldLayout {
+	layout: 'panel';
+	fields?: FormField[];
+}
+
+export interface InlineFieldLayout extends BaseFieldLayout {
+	layout: 'inline';
+}
+
 export type FormField =
 	| string
-	| {
-			id: string;
-			label?: string;
-			layout?: 'regular' | 'panel' | 'inline';
-			fields?: FormField[];
-	  };
+	| RegularFieldLayout
+	| PanelFieldLayout
+	| InlineFieldLayout;
 
 /**
  * The form configuration.
