@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
+import { ToggleControl } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -97,6 +98,24 @@ const fields = [
 			return item.status !== 'private';
 		},
 	},
+	{
+		id: 'sticky',
+		label: 'Sticky',
+		type: 'integer',
+		Edit: ( { field, onChange, data, hideLabelFromVision } ) => {
+			const { id, getValue } = field;
+			return (
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ hideLabelFromVision ? '' : field.label }
+					checked={ getValue( { item: data } ) }
+					onChange={ () =>
+						onChange( { [ id ]: ! getValue( { item: data } ) } )
+					}
+				/>
+			);
+		},
+	},
 ] as Field< SamplePost >[];
 
 export const Default = ( {
@@ -112,6 +131,7 @@ export const Default = ( {
 		reviewer: 'fulano',
 		date: '2021-01-01T12:00:00',
 		birthdate: '1950-02-23T12:00:00',
+		sticky: false,
 	} );
 
 	const form = {
@@ -119,9 +139,8 @@ export const Default = ( {
 			'title',
 			'order',
 			{
-				id: 'status',
-				layout: 'panel',
-				fields: [ 'status', 'password' ],
+				id: 'sticky',
+				layout: type === 'regular' ? 'regular' : 'inline',
 			},
 			'author',
 			'reviewer',
@@ -200,5 +219,8 @@ export const CombinedFields = {
 	render: CombinedFieldsComponent,
 	argTypes: {
 		...meta.argTypes,
+	},
+	args: {
+		type: 'panel',
 	},
 };
