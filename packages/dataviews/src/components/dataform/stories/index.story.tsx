@@ -186,12 +186,11 @@ const CombinedFieldsComponent = ( {
 	const form = {
 		fields: [
 			'title',
-			...( type === 'regular'
+			...( type === 'inline'
 				? [ 'status', 'password' ]
 				: [
 						{
 							id: 'status',
-							layout: 'panel',
 							children: [ 'status', 'password' ],
 						},
 				  ] ),

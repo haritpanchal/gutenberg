@@ -38,7 +38,9 @@ export function DataFormLayout< Item >( {
 		<VStack spacing={ 2 }>
 			{ fields.map( ( field ) => {
 				const fieldLayoutId =
-					typeof field === 'string' ? defaultLayout : field.layout;
+					typeof field !== 'string' && field.layout
+						? field.layout
+						: defaultLayout;
 				const FieldLayout = getFormFieldLayout(
 					fieldLayoutId ?? 'regular'
 				)?.component;

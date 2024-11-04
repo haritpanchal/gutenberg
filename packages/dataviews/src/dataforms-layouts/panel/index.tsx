@@ -24,6 +24,7 @@ interface FormFieldProps< Item > {
 	data: Item;
 	field: FormField;
 	onChange: ( value: any ) => void;
+	defaultLayout?: string;
 }
 
 function DropdownHeader( {
@@ -60,13 +61,14 @@ export default function FormPanelField< Item >( {
 	data,
 	field,
 	onChange,
+	defaultLayout,
 }: FormFieldProps< Item > ) {
 	const { getFieldDefinition } = useContext( DataFormContext );
 	const fieldDefinition = getFieldDefinition( field );
 	const childrenFields = useMemo( () => {
 		if (
 			typeof field !== 'string' &&
-			field.layout === 'panel' &&
+			// field.layout === 'panel' &&
 			field.children
 		) {
 			return field.children;
@@ -139,6 +141,7 @@ export default function FormPanelField< Item >( {
 								data={ data }
 								fields={ childrenFields }
 								onChange={ onChange }
+								defaultLayout={ defaultLayout }
 							>
 								{ ( FieldLayout, nestedField ) => (
 									<FieldLayout
