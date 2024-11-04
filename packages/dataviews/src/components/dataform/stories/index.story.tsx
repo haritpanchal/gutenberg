@@ -192,7 +192,7 @@ const CombinedFieldsComponent = ( {
 						{
 							id: 'status',
 							layout: 'panel',
-							fields: [ 'status', 'password' ],
+							children: [ 'status', 'password' ],
 						},
 				  ] ),
 			'order',

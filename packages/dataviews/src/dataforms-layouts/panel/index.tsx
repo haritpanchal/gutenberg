@@ -67,9 +67,9 @@ export default function FormPanelField< Item >( {
 		if (
 			typeof field !== 'string' &&
 			field.layout === 'panel' &&
-			field.fields
+			field.children
 		) {
-			return field.fields;
+			return field.children;
 		}
 		return [ field ];
 	}, [ field ] );

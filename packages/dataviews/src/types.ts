@@ -538,7 +538,7 @@ export interface RegularFieldLayout extends BaseFieldLayout {
 
 export interface PanelFieldLayout extends BaseFieldLayout {
 	layout: 'panel';
-	fields?: FormField[];
+	children?: FormField[];
 }
 
 export interface InlineFieldLayout extends BaseFieldLayout {
