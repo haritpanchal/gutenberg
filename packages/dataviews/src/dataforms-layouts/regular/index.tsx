@@ -46,6 +46,10 @@ export default function FormRegularField< Item >( {
 }: FormFieldProps< Item > ) {
 	const { getFieldDefinition } = useContext( DataFormContext );
 	const fieldDefinition = getFieldDefinition( field );
+	const labelPosition =
+		typeof field !== 'string' && field.labelPosition
+			? field.labelPosition
+			: 'top';
 	const childrenFields = useMemo( () => {
 		if ( typeof field !== 'string' && field.children ) {
 			return field.children;
@@ -70,6 +74,25 @@ export default function FormRegularField< Item >( {
 					defaultLayout={ defaultLayout }
 				/>
 			</>
+		);
+	}
+
+	if ( labelPosition === 'side' ) {
+		return (
+			<HStack className="dataforms-layouts-regular__field">
+				<div className="dataforms-layouts-regular__field-label">
+					{ fieldDefinition.label }
+				</div>
+				<div className="dataforms-layouts-regular__field-control">
+					<fieldDefinition.Edit
+						key={ fieldDefinition.id }
+						data={ data }
+						field={ fieldDefinition }
+						onChange={ onChange }
+						hideLabelFromVision
+					/>
+				</div>
+			</HStack>
 		);
 	}
 

@@ -3,7 +3,6 @@
  */
 import FormRegularField from './regular';
 import FormPanelField from './panel';
-import FormInlineField from './inline';
 
 const FORM_FIELD_LAYOUTS = [
 	{
@@ -13,10 +12,6 @@ const FORM_FIELD_LAYOUTS = [
 	{
 		type: 'panel',
 		component: FormPanelField,
-	},
-	{
-		type: 'inline',
-		component: FormInlineField,
 	},
 ];
 

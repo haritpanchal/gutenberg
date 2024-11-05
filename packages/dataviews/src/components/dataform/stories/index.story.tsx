@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useMemo, useState } from '@wordpress/element';
 import { ToggleControl } from '@wordpress/components';
 
 /**
@@ -29,7 +29,12 @@ const meta = {
 			control: { type: 'select' },
 			description:
 				'Chooses the default layout of each field. "regular" is the default layout.',
-			options: [ 'regular', 'panel', 'inline' ],
+			options: [ 'regular', 'panel' ],
+		},
+		labelPosition: {
+			control: { type: 'select' },
+			description: 'Chooses the label position of the layout.',
+			options: [ 'default', 'top', 'side' ],
 		},
 	},
 };
@@ -120,8 +125,10 @@ const fields = [
 
 export const Default = ( {
 	type,
+	labelPosition,
 }: {
-	type: 'panel' | 'regular' | 'inline';
+	type: 'panel' | 'regular';
+	labelPosition: 'default' | 'top' | 'side';
 } ) => {
 	const [ post, setPost ] = useState( {
 		title: 'Hello, World!',
@@ -134,21 +141,37 @@ export const Default = ( {
 		sticky: false,
 	} );
 
-	const form = {
-		fields: [
-			'title',
-			'order',
-			{
-				id: 'sticky',
-				layout: type === 'regular' ? 'regular' : 'inline',
-			},
-			'author',
-			'reviewer',
-			'password',
-			'date',
-			'birthdate',
-		],
-	} as Form;
+	const form = useMemo(
+		() => ( {
+			fields: [
+				'title',
+				'order',
+				{
+					id: 'sticky',
+					layout: 'regular',
+					labelPosition: type === 'regular' ? labelPosition : 'side',
+				},
+				'author',
+				'reviewer',
+				'password',
+				'date',
+				'birthdate',
+			].map( ( field ) => {
+				if (
+					labelPosition !== 'default' &&
+					typeof field === 'string'
+				) {
+					return {
+						id: field,
+						layout: type,
+						labelPosition,
+					};
+				}
+				return field;
+			} ),
+		} ),
+		[ type, labelPosition ]
+	) as Form;
 
 	return (
 		<DataForm< SamplePost >
@@ -170,8 +193,10 @@ export const Default = ( {
 
 const CombinedFieldsComponent = ( {
 	type = 'regular',
+	labelPosition,
 }: {
-	type: 'panel' | 'regular' | 'inline';
+	type: 'panel' | 'regular';
+	labelPosition: 'default' | 'top' | 'side';
 } ) => {
 	const [ post, setPost ] = useState< SamplePost >( {
 		title: 'Hello, World!',
@@ -183,21 +208,32 @@ const CombinedFieldsComponent = ( {
 		birthdate: '1950-02-23T12:00:00',
 	} );
 
-	const form = {
-		fields: [
-			'title',
-			...( type === 'inline'
-				? [ 'status', 'password' ]
-				: [
-						{
-							id: 'status',
-							children: [ 'status', 'password' ],
-						},
-				  ] ),
-			'order',
-			'author',
-		],
-	} as Form;
+	const form = useMemo(
+		() => ( {
+			fields: [
+				'title',
+				{
+					id: 'status',
+					children: [ 'status', 'password' ],
+				},
+				'order',
+				'author',
+			].map( ( field ) => {
+				if (
+					labelPosition !== 'default' &&
+					typeof field === 'string'
+				) {
+					return {
+						id: field,
+						layout: type,
+						labelPosition,
+					};
+				}
+				return field;
+			} ),
+		} ),
+		[ type, labelPosition ]
+	) as Form;
 
 	return (
 		<DataForm< SamplePost >
