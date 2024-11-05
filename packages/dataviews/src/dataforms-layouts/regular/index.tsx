@@ -46,13 +46,17 @@ export default function FormRegularField< Item >( {
 }: FormFieldProps< Item > ) {
 	const { getFieldDefinition } = useContext( DataFormContext );
 	const fieldDefinition = getFieldDefinition( field );
-	const labelPosition =
-		typeof field !== 'string' && field.labelPosition
-			? field.labelPosition
-			: 'top';
+	const labelPosition = field.labelPosition ?? 'top';
 	const childrenFields = useMemo( () => {
 		if ( typeof field !== 'string' && field.children ) {
-			return field.children;
+			return field.children.map( ( child ) => {
+				if ( typeof child === 'string' ) {
+					return {
+						id: child,
+					};
+				}
+				return child;
+			} );
 		}
 		return [];
 	}, [ field ] );

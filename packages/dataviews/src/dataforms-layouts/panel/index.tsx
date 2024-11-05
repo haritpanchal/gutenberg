@@ -69,14 +69,18 @@ function PanelDropdown< Item >( {
 	popoverAnchor: HTMLElement | null;
 } & FormFieldProps< Item > ) {
 	const childrenFields = useMemo( () => {
-		const isFieldObject = typeof field !== 'string';
-		if ( isFieldObject && field.children ) {
-			return field.children;
+		if ( field.children ) {
+			return field.children.map( ( child ) => {
+				if ( typeof child === 'string' ) {
+					return {
+						id: child,
+					};
+				}
+				return child;
+			} );
 		}
-		if ( isFieldObject && field.id ) {
-			return [ field.id ];
-		}
-		return [ field ];
+		// If not explicit children return the field id itself.
+		return [ { id: field.id } ];
 	}, [ field ] );
 
 	// Memoize popoverProps to avoid returning a new object every time.
@@ -159,10 +163,7 @@ export default function FormPanelField< Item >( {
 }: FormFieldProps< Item > ) {
 	const { getFieldDefinition } = useContext( DataFormContext );
 	const fieldDefinition = getFieldDefinition( field );
-	const labelPosition =
-		typeof field !== 'string' && field.labelPosition
-			? field.labelPosition
-			: 'side';
+	const labelPosition = field.labelPosition ?? 'side';
 
 	// Use internal state instead of a ref to make sure that the component
 	// re-renders when the popover's anchor updates.

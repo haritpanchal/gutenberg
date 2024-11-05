@@ -20,7 +20,7 @@ export function DataFormLayout< Item >( {
 }: {
 	defaultLayout?: string;
 	data: Item;
-	fields: FormField[];
+	fields: Array< FormField | string >;
 	onChange: ( value: any ) => void;
 	children?: (
 		FieldLayout: ( props: {
@@ -37,10 +37,15 @@ export function DataFormLayout< Item >( {
 	return (
 		<VStack spacing={ 2 }>
 			{ fields.map( ( field ) => {
-				const fieldLayoutId =
-					typeof field !== 'string' && field.layout
-						? field.layout
-						: defaultLayout;
+				const formField: FormField =
+					typeof field !== 'string'
+						? field
+						: {
+								id: field,
+						  };
+				const fieldLayoutId = formField.layout
+					? formField.layout
+					: defaultLayout;
 				const FieldLayout = getFormFieldLayout(
 					fieldLayoutId ?? 'regular'
 				)?.component;
@@ -49,8 +54,7 @@ export function DataFormLayout< Item >( {
 					return null;
 				}
 
-				const fieldId = typeof field === 'string' ? field : field.id;
-				const fieldDefinition = getFieldDefinition( fieldId );
+				const fieldDefinition = getFieldDefinition( formField );
 
 				if (
 					! fieldDefinition ||
@@ -61,14 +65,14 @@ export function DataFormLayout< Item >( {
 				}
 
 				if ( children ) {
-					return children( FieldLayout, field );
+					return children( FieldLayout, formField );
 				}
 
 				return (
 					<FieldLayout
-						key={ fieldId }
+						key={ formField.id }
 						data={ data }
-						field={ field }
+						field={ formField }
 						onChange={ onChange }
 					/>
 				);

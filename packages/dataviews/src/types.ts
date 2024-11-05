@@ -527,22 +527,20 @@ export interface SupportedLayouts {
 	table?: Omit< ViewTable, 'type' >;
 }
 
-export type FormField =
-	| string
-	| {
-			id: string;
-			label?: string;
-			layout?: 'regular' | 'panel';
-			labelPosition?: 'side' | 'top';
-			children?: FormField[];
-	  };
+export type FormField = {
+	id: string;
+	label?: string;
+	layout?: 'regular' | 'panel';
+	labelPosition?: 'side' | 'top';
+	children?: Array< FormField | string >;
+};
 
 /**
  * The form configuration.
  */
 export type Form = {
 	type?: 'regular' | 'panel';
-	fields?: FormField[];
+	fields?: Array< FormField | string >;
 };
 
 export interface DataFormProps< Item > {

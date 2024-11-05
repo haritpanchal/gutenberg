@@ -10,7 +10,7 @@ import type { FormField, NormalizedField } from '../../types';
 
 type DataFormContextType< Item > = {
 	getFieldDefinition: (
-		field: FormField
+		field: FormField | string
 	) => NormalizedField< Item > | undefined;
 };
 
@@ -23,7 +23,7 @@ export function DataFormProvider< Item >( {
 	children,
 }: React.PropsWithChildren< { fields: NormalizedField< Item >[] } > ) {
 	const getFieldDefinition = useCallback(
-		( field: FormField ) => {
+		( field: FormField | string ) => {
 			const fieldId = typeof field === 'string' ? field : field.id;
 
 			const definition = fields.find(

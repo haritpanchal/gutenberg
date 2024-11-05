@@ -8,7 +8,7 @@ import { ToggleControl } from '@wordpress/components';
  * Internal dependencies
  */
 import DataForm from '../index';
-import type { Field, Form } from '../../../types';
+import type { Field, Form, FormField } from '../../../types';
 
 type SamplePost = {
 	title: string;
@@ -123,6 +123,33 @@ const fields = [
 	},
 ] as Field< SamplePost >[];
 
+function toFormField(
+	formFields: Array< string | FormField >,
+	labelPosition: 'default' | 'top' | 'side',
+	type: 'panel' | 'regular'
+): FormField[] {
+	return formFields.map( ( field ) => {
+		if ( typeof field === 'string' ) {
+			return {
+				id: field,
+				layout: type,
+				labelPosition:
+					labelPosition === 'default' ? undefined : labelPosition,
+			};
+		} else if (
+			typeof field !== 'string' &&
+			field.children &&
+			type !== 'panel'
+		) {
+			return {
+				...field,
+				children: toFormField( field.children, labelPosition, type ),
+			};
+		}
+		return field;
+	} );
+}
+
 export const Default = ( {
 	type,
 	labelPosition,
@@ -143,32 +170,27 @@ export const Default = ( {
 
 	const form = useMemo(
 		() => ( {
-			fields: [
-				'title',
-				'order',
-				{
-					id: 'sticky',
-					layout: 'regular',
-					labelPosition: type === 'regular' ? labelPosition : 'side',
-				},
-				'author',
-				'reviewer',
-				'password',
-				'date',
-				'birthdate',
-			].map( ( field ) => {
-				if (
-					labelPosition !== 'default' &&
-					typeof field === 'string'
-				) {
-					return {
-						id: field,
-						layout: type,
-						labelPosition,
-					};
-				}
-				return field;
-			} ),
+			fields: toFormField(
+				[
+					'title',
+					'order',
+					{
+						id: 'sticky',
+						layout: 'regular',
+						labelPosition:
+							type === 'regular' && labelPosition !== 'default'
+								? labelPosition
+								: 'side',
+					},
+					'author',
+					'reviewer',
+					'password',
+					'date',
+					'birthdate',
+				],
+				labelPosition,
+				type
+			),
 		} ),
 		[ type, labelPosition ]
 	) as Form;
@@ -210,27 +232,19 @@ const CombinedFieldsComponent = ( {
 
 	const form = useMemo(
 		() => ( {
-			fields: [
-				'title',
-				{
-					id: 'status',
-					children: [ 'status', 'password' ],
-				},
-				'order',
-				'author',
-			].map( ( field ) => {
-				if (
-					labelPosition !== 'default' &&
-					typeof field === 'string'
-				) {
-					return {
-						id: field,
-						layout: type,
-						labelPosition,
-					};
-				}
-				return field;
-			} ),
+			fields: toFormField(
+				[
+					'title',
+					{
+						id: 'status',
+						children: [ 'status', 'password' ],
+					},
+					'order',
+					'author',
+				],
+				labelPosition,
+				type
+			),
 		} ),
 		[ type, labelPosition ]
 	) as Form;
