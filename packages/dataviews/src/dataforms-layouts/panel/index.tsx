@@ -17,9 +17,10 @@ import { closeSmall } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import type { FormField, NormalizedField } from '../../types';
+import type { FormField, NormalizedField, SimpleFormField } from '../../types';
 import DataFormContext from '../../components/dataform-context';
 import { DataFormLayout } from '../data-form-layout';
+import { isCombinedField } from '../is-combined-field';
 
 interface FormFieldProps< Item > {
 	data: Item;
@@ -32,7 +33,7 @@ function DropdownHeader( {
 	title,
 	onClose,
 }: {
-	title: string;
+	title?: string;
 	onClose: () => void;
 } ) {
 	return (
@@ -41,9 +42,11 @@ function DropdownHeader( {
 			spacing={ 4 }
 		>
 			<HStack alignment="center">
-				<Heading level={ 2 } size={ 13 }>
-					{ title }
-				</Heading>
+				{ title && (
+					<Heading level={ 2 } size={ 13 }>
+						{ title }
+					</Heading>
+				) }
 				<Spacer />
 				{ onClose && (
 					<Button
@@ -68,20 +71,22 @@ function PanelDropdown< Item >( {
 	fieldDefinition: NormalizedField< Item >;
 	popoverAnchor: HTMLElement | null;
 } & FormFieldProps< Item > ) {
-	const fieldLabel = field.label ?? fieldDefinition.label;
+	const fieldLabel = isCombinedField( field )
+		? field.label
+		: fieldDefinition?.label;
 	const childrenFields = useMemo( () => {
-		if ( field.children ) {
+		if ( isCombinedField( field ) ) {
 			return field.children.map( ( child ) => {
 				if ( typeof child === 'string' ) {
 					return {
-						id: child,
+						field: child,
 					};
 				}
 				return child;
 			} );
 		}
 		// If not explicit children return the field id itself.
-		return [ { id: field.id } ];
+		return [ { field: field.field } ];
 	}, [ field ] );
 
 	// Memoize popoverProps to avoid returning a new object every time.
@@ -134,9 +139,9 @@ function PanelDropdown< Item >( {
 						{ ( FieldLayout, nestedField ) => (
 							<FieldLayout
 								key={
-									typeof nestedField === 'string'
-										? nestedField
-										: nestedField.id
+									isCombinedField( nestedField )
+										? nestedField.id
+										: nestedField.field
 								}
 								data={ data }
 								field={ nestedField }
@@ -160,9 +165,21 @@ export default function FormPanelField< Item >( {
 	defaultLayout,
 }: FormFieldProps< Item > ) {
 	const { fields } = useContext( DataFormContext );
-	const fieldDefinition = fields.find(
-		( fieldDef ) => fieldDef.id === field.id
-	);
+	const fieldDefinition = fields.find( ( fieldDef ) => {
+		// Default to the first child if it is a combined field.
+		if ( isCombinedField( field ) ) {
+			const children = field.children.filter(
+				( child ): child is string | SimpleFormField =>
+					typeof child === 'string' || ! isCombinedField( child )
+			);
+			const firstChildFieldId =
+				typeof children[ 0 ] === 'string'
+					? children[ 0 ]
+					: children[ 0 ].field;
+			return fieldDef.id === firstChildFieldId;
+		}
+		return fieldDef.id === field.field;
+	} );
 	const labelPosition = field.labelPosition ?? 'side';
 
 	// Use internal state instead of a ref to make sure that the component
@@ -175,7 +192,9 @@ export default function FormPanelField< Item >( {
 		return null;
 	}
 
-	const fieldLabel = field.label ?? fieldDefinition.label;
+	const fieldLabel = isCombinedField( field )
+		? field.label
+		: fieldDefinition?.label;
 
 	if ( labelPosition === 'top' ) {
 		return (

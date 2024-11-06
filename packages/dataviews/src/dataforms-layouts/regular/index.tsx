@@ -15,6 +15,7 @@ import {
 import type { FormField } from '../../types';
 import DataFormContext from '../../components/dataform-context';
 import { DataFormLayout } from '../data-form-layout';
+import { isCombinedField } from '../is-combined-field';
 
 interface FormFieldProps< Item > {
 	data: Item;
@@ -45,16 +46,13 @@ export default function FormRegularField< Item >( {
 	defaultLayout,
 }: FormFieldProps< Item > ) {
 	const { fields } = useContext( DataFormContext );
-	const fieldDefinition = fields.find(
-		( fieldDef ) => fieldDef.id === field.id
-	);
-	const labelPosition = field.labelPosition ?? 'top';
+
 	const childrenFields = useMemo( () => {
-		if ( typeof field !== 'string' && field.children ) {
+		if ( isCombinedField( field ) ) {
 			return field.children.map( ( child ) => {
 				if ( typeof child === 'string' ) {
 					return {
-						id: child,
+						field: child,
 					};
 				}
 				return child;
@@ -63,15 +61,12 @@ export default function FormRegularField< Item >( {
 		return [];
 	}, [ field ] );
 
-	if ( ! fieldDefinition ) {
-		return null;
-	}
-	const fieldLabel = field.label ?? fieldDefinition.label;
-
-	if ( childrenFields.length > 0 ) {
+	if ( isCombinedField( field ) ) {
 		return (
 			<>
-				{ ! hideLabelFromVision && <Header title={ fieldLabel } /> }
+				{ ! hideLabelFromVision && field.label && (
+					<Header title={ field.label } />
+				) }
 				<DataFormLayout
 					data={ data }
 					fields={ childrenFields }
@@ -82,6 +77,14 @@ export default function FormRegularField< Item >( {
 		);
 	}
 
+	const labelPosition = field.labelPosition ?? 'top';
+	const fieldDefinition = fields.find(
+		( fieldDef ) => fieldDef.id === field.field
+	);
+
+	if ( ! fieldDefinition ) {
+		return null;
+	}
 	if ( labelPosition === 'side' ) {
 		return (
 			<HStack className="dataforms-layouts-regular__field">

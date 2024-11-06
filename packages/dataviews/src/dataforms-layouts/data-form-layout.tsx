@@ -7,9 +7,10 @@ import { useContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import type { FormField } from '../types';
+import type { FormField, SimpleFormField } from '../types';
 import { getFormFieldLayout } from './index';
 import DataFormContext from '../components/dataform-context';
+import { isCombinedField } from './is-combined-field';
 
 export function DataFormLayout< Item >( {
 	defaultLayout,
@@ -34,8 +35,8 @@ export function DataFormLayout< Item >( {
 } ) {
 	const { fields: fieldDefinitions } = useContext( DataFormContext );
 
-	function getFieldDefinition( field: FormField | string ) {
-		const fieldId = typeof field === 'string' ? field : field.id;
+	function getFieldDefinition( field: SimpleFormField | string ) {
+		const fieldId = typeof field === 'string' ? field : field.field;
 
 		return fieldDefinitions.find(
 			( fieldDefinition ) => fieldDefinition.id === fieldId
@@ -49,7 +50,7 @@ export function DataFormLayout< Item >( {
 					typeof field !== 'string'
 						? field
 						: {
-								id: field,
+								field,
 						  };
 				const fieldLayoutId = formField.layout
 					? formField.layout
@@ -62,12 +63,14 @@ export function DataFormLayout< Item >( {
 					return null;
 				}
 
-				const fieldDefinition = getFieldDefinition( formField );
+				const fieldDefinition = ! isCombinedField( formField )
+					? getFieldDefinition( formField )
+					: undefined;
 
 				if (
-					! fieldDefinition ||
-					( fieldDefinition.isVisible &&
-						! fieldDefinition.isVisible( data ) )
+					fieldDefinition &&
+					fieldDefinition.isVisible &&
+					! fieldDefinition.isVisible( data )
 				) {
 					return null;
 				}
@@ -76,9 +79,12 @@ export function DataFormLayout< Item >( {
 					return children( FieldLayout, formField );
 				}
 
+				const key = isCombinedField( formField )
+					? formField.id
+					: formField.field;
 				return (
 					<FieldLayout
-						key={ formField.id }
+						key={ key }
 						data={ data }
 						field={ formField }
 						onChange={ onChange }

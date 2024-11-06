@@ -9,6 +9,7 @@ import { ToggleControl } from '@wordpress/components';
  */
 import DataForm from '../index';
 import type { Field, Form, FormField } from '../../../types';
+import { isCombinedField } from '../../../dataforms-layouts/is-combined-field';
 
 type SamplePost = {
 	title: string;
@@ -131,14 +132,14 @@ function toFormField(
 	return formFields.map( ( field ) => {
 		if ( typeof field === 'string' ) {
 			return {
-				id: field,
+				field,
 				layout: type,
 				labelPosition:
 					labelPosition === 'default' ? undefined : labelPosition,
 			};
 		} else if (
 			typeof field !== 'string' &&
-			field.children &&
+			isCombinedField( field ) &&
 			type !== 'panel'
 		) {
 			return {
@@ -175,7 +176,7 @@ export const Default = ( {
 					'title',
 					'order',
 					{
-						id: 'sticky',
+						field: 'sticky',
 						layout: 'regular',
 						labelPosition:
 							type === 'regular' && labelPosition !== 'default'

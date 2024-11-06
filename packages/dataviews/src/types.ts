@@ -527,13 +527,21 @@ export interface SupportedLayouts {
 	table?: Omit< ViewTable, 'type' >;
 }
 
-export type FormField = {
-	id: string;
+export type SimpleFormField = {
+	field: string;
+	layout?: 'regular' | 'panel';
+	labelPosition?: 'side' | 'top';
+};
+
+export type CombinedFormField = {
+	id?: string;
 	label?: string;
 	layout?: 'regular' | 'panel';
 	labelPosition?: 'side' | 'top';
-	children?: Array< FormField | string >;
+	children: Array< FormField | string >;
 };
+
+export type FormField = SimpleFormField | CombinedFormField;
 
 /**
  * The form configuration.
