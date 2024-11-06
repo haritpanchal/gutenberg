@@ -44,8 +44,10 @@ export default function FormRegularField< Item >( {
 	hideLabelFromVision,
 	defaultLayout,
 }: FormFieldProps< Item > ) {
-	const { getFieldDefinition } = useContext( DataFormContext );
-	const fieldDefinition = getFieldDefinition( field );
+	const { fields } = useContext( DataFormContext );
+	const fieldDefinition = fields.find(
+		( fieldDef ) => fieldDef.id === field.id
+	);
 	const labelPosition = field.labelPosition ?? 'top';
 	const childrenFields = useMemo( () => {
 		if ( typeof field !== 'string' && field.children ) {
@@ -64,13 +66,12 @@ export default function FormRegularField< Item >( {
 	if ( ! fieldDefinition ) {
 		return null;
 	}
+	const fieldLabel = field.label ?? fieldDefinition.label;
 
 	if ( childrenFields.length > 0 ) {
 		return (
 			<>
-				{ ! hideLabelFromVision && (
-					<Header title={ fieldDefinition.label } />
-				) }
+				{ ! hideLabelFromVision && <Header title={ fieldLabel } /> }
 				<DataFormLayout
 					data={ data }
 					fields={ childrenFields }

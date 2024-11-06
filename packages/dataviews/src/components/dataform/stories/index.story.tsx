@@ -237,6 +237,7 @@ const CombinedFieldsComponent = ( {
 					'title',
 					{
 						id: 'status',
+						label: 'Status & Visibility',
 						children: [ 'status', 'password' ],
 					},
 					'order',

@@ -1,50 +1,27 @@
 /**
  * WordPress dependencies
  */
-import { createContext, useCallback } from '@wordpress/element';
+import { createContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import type { FormField, NormalizedField } from '../../types';
+import type { NormalizedField } from '../../types';
 
 type DataFormContextType< Item > = {
-	getFieldDefinition: (
-		field: FormField | string
-	) => NormalizedField< Item > | undefined;
+	fields: NormalizedField< Item >[];
 };
 
 const DataFormContext = createContext< DataFormContextType< any > >( {
-	getFieldDefinition: () => undefined,
+	fields: [],
 } );
 
 export function DataFormProvider< Item >( {
 	fields,
 	children,
 }: React.PropsWithChildren< { fields: NormalizedField< Item >[] } > ) {
-	const getFieldDefinition = useCallback(
-		( field: FormField | string ) => {
-			const fieldId = typeof field === 'string' ? field : field.id;
-
-			const definition = fields.find(
-				( fieldDefinition ) => fieldDefinition.id === fieldId
-			);
-			if ( definition ) {
-				return {
-					...definition,
-					label:
-						typeof field !== 'string' && field.label
-							? field.label
-							: definition.label,
-				};
-			}
-			return undefined;
-		},
-		[ fields ]
-	);
-
 	return (
-		<DataFormContext.Provider value={ { getFieldDefinition } }>
+		<DataFormContext.Provider value={ { fields } }>
 			{ children }
 		</DataFormContext.Provider>
 	);

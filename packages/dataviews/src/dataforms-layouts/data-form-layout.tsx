@@ -32,7 +32,15 @@ export function DataFormLayout< Item >( {
 		field: FormField
 	) => React.JSX.Element;
 } ) {
-	const { getFieldDefinition } = useContext( DataFormContext );
+	const { fields: fieldDefinitions } = useContext( DataFormContext );
+
+	function getFieldDefinition( field: FormField | string ) {
+		const fieldId = typeof field === 'string' ? field : field.id;
+
+		return fieldDefinitions.find(
+			( fieldDefinition ) => fieldDefinition.id === fieldId
+		);
+	}
 
 	return (
 		<VStack spacing={ 2 }>

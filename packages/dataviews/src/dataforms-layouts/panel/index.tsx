@@ -68,6 +68,7 @@ function PanelDropdown< Item >( {
 	fieldDefinition: NormalizedField< Item >;
 	popoverAnchor: HTMLElement | null;
 } & FormFieldProps< Item > ) {
+	const fieldLabel = field.label ?? fieldDefinition.label;
 	const childrenFields = useMemo( () => {
 		if ( field.children ) {
 			return field.children.map( ( child ) => {
@@ -115,7 +116,7 @@ function PanelDropdown< Item >( {
 					aria-label={ sprintf(
 						// translators: %s: Field name.
 						_x( 'Edit %s', 'field' ),
-						fieldDefinition.label
+						fieldLabel
 					) }
 					onClick={ onToggle }
 				>
@@ -124,10 +125,7 @@ function PanelDropdown< Item >( {
 			) }
 			renderContent={ ( { onClose } ) => (
 				<>
-					<DropdownHeader
-						title={ fieldDefinition.label }
-						onClose={ onClose }
-					/>
+					<DropdownHeader title={ fieldLabel } onClose={ onClose } />
 					<DataFormLayout
 						data={ data }
 						fields={ childrenFields }
@@ -161,8 +159,10 @@ export default function FormPanelField< Item >( {
 	onChange,
 	defaultLayout,
 }: FormFieldProps< Item > ) {
-	const { getFieldDefinition } = useContext( DataFormContext );
-	const fieldDefinition = getFieldDefinition( field );
+	const { fields } = useContext( DataFormContext );
+	const fieldDefinition = fields.find(
+		( fieldDef ) => fieldDef.id === field.id
+	);
 	const labelPosition = field.labelPosition ?? 'side';
 
 	// Use internal state instead of a ref to make sure that the component
@@ -175,11 +175,13 @@ export default function FormPanelField< Item >( {
 		return null;
 	}
 
+	const fieldLabel = field.label ?? fieldDefinition.label;
+
 	if ( labelPosition === 'top' ) {
 		return (
 			<BaseControl __nextHasNoMarginBottom>
 				<BaseControl.VisualLabel>
-					{ fieldDefinition.label }
+					{ fieldLabel }
 				</BaseControl.VisualLabel>
 				<div>
 					<PanelDropdown
@@ -202,7 +204,7 @@ export default function FormPanelField< Item >( {
 			className="dataforms-layouts-panel__field"
 		>
 			<div className="dataforms-layouts-panel__field-label">
-				{ fieldDefinition.label }
+				{ fieldLabel }
 			</div>
 			<div>
 				<PanelDropdown
