@@ -35,8 +35,12 @@ function Editor( {
 		( select ) => {
 			const { getEntityRecord, hasFinishedResolution } =
 				select( coreStore );
+			let _postType = postType;
+			if ( typeof postType === 'string' ) {
+				_postType = '_wp_static_template';
+			}
 			return {
-				post: getEntityRecord( 'postType', postType, postId ),
+				post: getEntityRecord( 'postType', _postType, postId ),
 				template: templateId
 					? getEntityRecord(
 							'postType',
@@ -46,7 +50,7 @@ function Editor( {
 					: undefined,
 				hasLoadedPost: hasFinishedResolution( 'getEntityRecord', [
 					'postType',
-					postType,
+					_postType,
 					postId,
 				] ),
 			};

@@ -94,7 +94,7 @@ const DEFAULT_VIEW = {
 
 export default function PageTemplates() {
 	const { params } = useLocation();
-	const { activeView = 'all', layout, postId } = params;
+	const { activeView = 'user', layout, postId } = params;
 	const [ selection, setSelection ] = useState( [ postId ] );
 
 	const defaultView = useMemo( () => {
@@ -140,8 +140,6 @@ export default function PageTemplates() {
 		useEntityRecordsWithPermissions( 'postType', kind, {
 			per_page: -1,
 		} );
-
-	console.log( kind, records );
 
 	const history = useHistory();
 	const onChangeSelection = useCallback(

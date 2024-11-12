@@ -12,7 +12,6 @@ import { __ } from '@wordpress/i18n';
 import DataViewItem from '../sidebar-dataviews/dataview-item';
 import { useAddedBy } from '../page-templates/hooks';
 import { layout } from '@wordpress/icons';
-import { TEMPLATE_POST_TYPE } from '../../utils/constants';
 
 const EMPTY_ARRAY = [];
 
@@ -30,14 +29,10 @@ function TemplateDataviewItem( { template, isActive } ) {
 	);
 }
 
-export default function DataviewsTemplatesSidebarContent( {
-	activeView,
-	title,
-} ) {
+export default function DataviewsTemplatesSidebarContent( { activeView } ) {
 	const { records } = useEntityRecords( 'postType', '_wp_static_template', {
 		per_page: -1,
 	} );
-	console.log( records );
 	const firstItemPerAuthorText = useMemo( () => {
 		const firstItemPerAuthor = records?.reduce( ( acc, template ) => {
 			const author = template.author_text;
