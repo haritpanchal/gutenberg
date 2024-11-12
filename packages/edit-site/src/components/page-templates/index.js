@@ -12,7 +12,7 @@ import { privateApis as editorPrivateApis } from '@wordpress/editor';
  * Internal dependencies
  */
 import Page from '../page';
-import AddNewTemplate from '../add-new-template';
+import AddNewTemplate, { PickTemplateModal } from '../add-new-template';
 import {
 	TEMPLATE_POST_TYPE,
 	OPERATOR_IS_ANY,
@@ -21,12 +21,17 @@ import {
 	LAYOUT_LIST,
 } from '../../utils/constants';
 import { unlock } from '../../lock-unlock';
-import { useEditPostAction } from '../dataviews-actions';
+import {
+	useEditPostAction,
+	useSetActiveTemplateAction,
+	useSetInactiveTemplateAction,
+} from '../dataviews-actions';
 import {
 	authorField,
 	descriptionField,
 	previewField,
 	titleField,
+	activeField,
 } from './fields';
 
 const { usePostActions } = unlock( editorPrivateApis );
@@ -37,7 +42,7 @@ const EMPTY_ARRAY = [];
 
 const defaultLayouts = {
 	[ LAYOUT_TABLE ]: {
-		fields: [ 'template', 'author' ],
+		fields: [ 'template', 'author', 'active' ],
 		layout: {
 			primaryField: 'title',
 			combinedFields: [
@@ -63,7 +68,7 @@ const defaultLayouts = {
 		},
 	},
 	[ LAYOUT_GRID ]: {
-		fields: [ 'title', 'description', 'author' ],
+		fields: [ 'title', 'description', 'author', 'active' ],
 		layout: {
 			mediaField: 'preview',
 			primaryField: 'title',
@@ -71,7 +76,7 @@ const defaultLayouts = {
 		},
 	},
 	[ LAYOUT_LIST ]: {
-		fields: [ 'title', 'description', 'author' ],
+		fields: [ 'title', 'description', 'author', 'active' ],
 		layout: {
 			primaryField: 'title',
 		},
@@ -96,7 +101,7 @@ export default function PageTemplates() {
 	const { params } = useLocation();
 	const { activeView = 'user', layout, postId } = params;
 	const [ selection, setSelection ] = useState( [ postId ] );
-
+	const [ activeTemplate, setActiveTemplate ] = useState( null );
 	const defaultView = useMemo( () => {
 		const usedType = layout ?? DEFAULT_VIEW.type;
 		return {
@@ -140,6 +145,7 @@ export default function PageTemplates() {
 		useEntityRecordsWithPermissions( 'postType', kind, {
 			// To do: for user templates, we want server side pagination.
 			per_page: -1,
+			status: 'publish,draft',
 		} );
 
 	const history = useHistory();
@@ -170,8 +176,8 @@ export default function PageTemplates() {
 		} ) );
 	}, [ records ] );
 
-	const fields = useMemo(
-		() => [
+	const fields = useMemo( () => {
+		const _fields = [
 			previewField,
 			titleField,
 			descriptionField,
@@ -179,9 +185,12 @@ export default function PageTemplates() {
 				...authorField,
 				elements: authors,
 			},
-		],
-		[ authors ]
-	);
+		];
+		if ( activeView === 'user' ) {
+			_fields.push( activeField );
+		}
+		return _fields;
+	}, [ authors, activeView ] );
 
 	const { data, paginationInfo } = useMemo( () => {
 		return filterSortAndPaginate( records, view, fields );
@@ -192,12 +201,27 @@ export default function PageTemplates() {
 		context: 'list',
 	} );
 	const editAction = useEditPostAction();
+	const setActiveTemplateAction =
+		useSetActiveTemplateAction( setActiveTemplate );
+	const setInactiveTemplateAction =
+		useSetInactiveTemplateAction( setActiveTemplate );
 	const actions = useMemo(
 		() =>
 			activeView === 'user'
-				? [ editAction, ...postTypeActions ]
-				: postTypeActions,
-		[ postTypeActions, editAction, activeView ]
+				? [
+						setActiveTemplateAction,
+						setInactiveTemplateAction,
+						editAction,
+						...postTypeActions,
+				  ]
+				: [ setActiveTemplateAction, ...postTypeActions ],
+		[
+			postTypeActions,
+			setActiveTemplateAction,
+			setInactiveTemplateAction,
+			editAction,
+			activeView,
+		]
 	);
 
 	const onChangeView = useCallback(
@@ -233,6 +257,14 @@ export default function PageTemplates() {
 				selection={ selection }
 				defaultLayouts={ defaultLayouts }
 			/>
+			{ activeTemplate && (
+				<PickTemplateModal
+					activeTemplate={ activeTemplate }
+					onClose={ () => {
+						setActiveTemplate( null );
+					} }
+				/>
+			) }
 		</Page>
 	);
 }

@@ -88,6 +88,11 @@ function gutenberg_modify_wp_template_post_type_args( $args, $post_type ) {
 		$args['rest_controller_class'] = 'WP_REST_Posts_Controller';
 		$args['autosave_rest_controller_class'] = null;
 		$args['revisions_rest_controller_class'] = null;
+		register_meta( $post_type, 'origin', array(
+			'show_in_rest' => true,
+			'single' => true,
+			'type' => 'string',
+		) );
 	}
 	return $args;
 }

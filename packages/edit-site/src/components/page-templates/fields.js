@@ -175,3 +175,10 @@ export const authorField = {
 	getValue: ( { item } ) => item.author_text,
 	render: AuthorField,
 };
+
+export const activeField = {
+	label: __( 'Active' ),
+	id: 'active',
+	getValue: ( { item } ) => item.status === 'publish',
+	render: ( { item } ) => ( item.status === 'publish' ? 'Yes' : 'No' ),
+};
