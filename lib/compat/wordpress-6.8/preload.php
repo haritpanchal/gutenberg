@@ -78,7 +78,11 @@ function gutenberg_block_editor_preload_paths_6_8( $paths, $context ) {
 }
 add_filter( 'block_editor_rest_api_preload_paths', 'gutenberg_block_editor_preload_paths_6_8', 10, 2 );
 
-function modify_custom_post_type_args( $args, $post_type ) {
+// How does this work?
+// 1. For wp_template, we remove the custom templates controller, so it becomes
+// and normals posts endpoint.
+
+function gutenberg_modify_wp_template_post_type_args( $args, $post_type ) {
 	if ( 'wp_template' === $post_type ) {
 		$args['rest_base'] = 'wp_template';
 		$args['rest_controller_class'] = 'WP_REST_Posts_Controller';
@@ -88,9 +92,14 @@ function modify_custom_post_type_args( $args, $post_type ) {
 	return $args;
 }
 
-add_filter( 'register_post_type_args', 'modify_custom_post_type_args', 10, 2 );
+add_filter( 'register_post_type_args', 'gutenberg_modify_wp_template_post_type_args', 10, 2 );
 
-function my_custom_register_route() {
+// 2. We maintain the routes for /templates and /templates/lookup. I think we'll
+// need to deprecate /templates eventually, but we'll still want to be able to
+// lookup the active template for a specific slug, and probably get a list of
+// all _active_ templates. For that we can keep /lookup.
+
+function gutenberg_maintain_templates_routes() {
 	// This should later be changed in core so we don't need initialise
 	// WP_REST_Templates_Controller with a post type.
 	global $wp_post_types;
@@ -99,7 +108,21 @@ function my_custom_register_route() {
 	$wp_post_types['wp_template']->rest_base = 'wp_template';
 	$controller->register_routes();
 }
-add_action( 'rest_api_init', 'my_custom_register_route' );
+add_action( 'rest_api_init', 'gutenberg_maintain_templates_routes' );
+
+// 3. Even though this doesn't need to exist as a post type, we need routes to
+// get that raw static templates from themes and plugins. I did not want to
+// templates for back-compat. Also I registered these as a post type route
+// because right now the EditorProvider assumes templates are posts.
+
+function gutenberg_setup_static_template() {
+	global $wp_post_types;
+	$wp_post_types['_wp_static_template'] = clone $wp_post_types['wp_template'];
+	$wp_post_types['_wp_static_template']->name = '_wp_static_template';
+	$wp_post_types['_wp_static_template']->rest_base = '_wp_static_template';
+	$wp_post_types['_wp_static_template']->rest_controller_class = 'Gutenberg_REST_Static_Templates_Controller';
+}
+add_action( 'init', 'gutenberg_setup_static_template' );
 
 class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Controller {
 	public function __construct( $post_type ) {
@@ -183,15 +206,3 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 		return $this->prepare_item_for_response( $template, $request );
 	}
 }
-
-function wporg_custom_post_type() {
-	global $wp_post_types;
-	$wp_post_types['_wp_static_template'] = clone $wp_post_types['wp_template'];
-	$wp_post_types['_wp_static_template']->name = '_wp_static_template';
-	$wp_post_types['_wp_static_template']->rest_base = '_wp_static_template';
-	$wp_post_types['_wp_static_template']->rest_controller_class = 'Gutenberg_REST_Static_Templates_Controller';
-	// $wp_post_types['wp_template']->rest_base = 'templates';
-	// $wp_post_types['_wp_static_template']->rest_controller = new Gutenberg_REST_Static_Templates_Controller( '_wp_static_template' );
-	// $wp_post_types['wp_template']->rest_base = 'wp_template';
-}
-add_action('init', 'wporg_custom_post_type');
