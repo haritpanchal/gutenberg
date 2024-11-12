@@ -12,7 +12,7 @@ import { privateApis as editorPrivateApis } from '@wordpress/editor';
  * Internal dependencies
  */
 import Page from '../page';
-import AddNewTemplate, { PickTemplateModal } from '../add-new-template';
+import AddNewTemplate from '../add-new-template';
 import {
 	TEMPLATE_POST_TYPE,
 	OPERATOR_IS_ANY,
@@ -101,7 +101,6 @@ export default function PageTemplates() {
 	const { params } = useLocation();
 	const { activeView = 'user', layout, postId } = params;
 	const [ selection, setSelection ] = useState( [ postId ] );
-	const [ activeTemplate, setActiveTemplate ] = useState( null );
 	const defaultView = useMemo( () => {
 		const usedType = layout ?? DEFAULT_VIEW.type;
 		return {
@@ -201,10 +200,8 @@ export default function PageTemplates() {
 		context: 'list',
 	} );
 	const editAction = useEditPostAction();
-	const setActiveTemplateAction =
-		useSetActiveTemplateAction( setActiveTemplate );
-	const setInactiveTemplateAction =
-		useSetInactiveTemplateAction( setActiveTemplate );
+	const setActiveTemplateAction = useSetActiveTemplateAction();
+	const setInactiveTemplateAction = useSetInactiveTemplateAction();
 	const actions = useMemo(
 		() =>
 			activeView === 'user'
@@ -257,14 +254,6 @@ export default function PageTemplates() {
 				selection={ selection }
 				defaultLayouts={ defaultLayouts }
 			/>
-			{ activeTemplate && (
-				<PickTemplateModal
-					activeTemplate={ activeTemplate }
-					onClose={ () => {
-						setActiveTemplate( null );
-					} }
-				/>
-			) }
 		</Page>
 	);
 }

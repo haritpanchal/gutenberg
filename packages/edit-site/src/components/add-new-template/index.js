@@ -148,118 +148,6 @@ const modalContentMap = {
 	customGenericTemplate: 3,
 };
 
-export function PickTemplateModal( { onClose, activeTemplate } ) {
-	const [ isSubmitting, setIsSubmitting ] = useState( false );
-	const defaultTemplateTypes = useDefaultTemplateTypes();
-	const { editEntityRecord, saveEditedEntityRecord } =
-		useDispatch( coreStore );
-	const { createErrorNotice, createSuccessNotice } =
-		useDispatch( noticesStore );
-
-	const isMobile = useViewportMatch( 'medium', '<' );
-
-	const homeUrl = useSelect( ( select ) => {
-		// Site index.
-		return select( coreStore ).getEntityRecord( 'root', '__unstableBase' )
-			?.home;
-	}, [] );
-
-	const TEMPLATE_SHORT_DESCRIPTIONS = {
-		'front-page': homeUrl,
-		date: sprintf(
-			// translators: %s: The homepage url.
-			__( 'E.g. %s' ),
-			homeUrl + '/' + new Date().getFullYear()
-		),
-	};
-
-	async function setActiveTemplate( template ) {
-		if ( isSubmitting ) {
-			return;
-		}
-		setIsSubmitting( true );
-		try {
-			const { title, description, slug } = template;
-			console.log( template, activeTemplate );
-			await editEntityRecord(
-				'postType',
-				TEMPLATE_POST_TYPE,
-				activeTemplate.id,
-				{
-					// Slugs need to be strings, so this is for template `404`
-					// slug: slug.toString(),
-					status: 'publish',
-				},
-				{ throwOnError: true }
-			);
-			await saveEditedEntityRecord(
-				'postType',
-				'page',
-				activeTemplate.id
-			);
-
-			createSuccessNotice(
-				sprintf(
-					// translators: %s: Title of the created post or template, e.g: "Hello world".
-					__( '"%s" successfully activated.' ),
-					decodeEntities( activeTemplate.title?.rendered || title )
-				),
-				{
-					type: 'snackbar',
-				}
-			);
-		} catch ( error ) {
-			const errorMessage =
-				error.message && error.code !== 'unknown_error'
-					? error.message
-					: __(
-							'An error occurred while setting the active template.'
-					  );
-
-			createErrorNotice( errorMessage, {
-				type: 'snackbar',
-			} );
-		} finally {
-			setIsSubmitting( false );
-		}
-	}
-	const onModalClose = () => {
-		onClose();
-	};
-
-	const modalTitle = __( 'Set active template' );
-
-	return (
-		<Modal title={ modalTitle } onRequestClose={ onModalClose }>
-			<Grid
-				columns={ isMobile ? 2 : 3 }
-				gap={ 4 }
-				align="flex-start"
-				justify="center"
-				className="edit-site-add-new-template__template-list__contents"
-			>
-				<Flex className="edit-site-add-new-template__template-list__prompt">
-					{ __( 'Select what the template should apply to:' ) }
-				</Flex>
-				{ defaultTemplateTypes.map( ( template ) => {
-					const { title, slug } = template;
-					return (
-						<TemplateListItem
-							key={ slug }
-							title={ title }
-							direction="column"
-							className="edit-site-add-new-template__template-button"
-							description={ TEMPLATE_SHORT_DESCRIPTIONS[ slug ] }
-							icon={ TEMPLATE_ICONS[ slug ] || layout }
-							onClick={ () => setActiveTemplate( template ) }
-						/>
-					);
-				} ) }
-			</Grid>
-		</Modal>
-	);
-}
-
 function NewTemplateModal( { onClose } ) {
 	const [ modalContent, setModalContent ] = useState(
 		modalContentMap.templatesList
@@ -305,7 +193,7 @@ function NewTemplateModal( { onClose } ) {
 					description,
 					// Slugs need to be strings, so this is for template `404`
 					slug: slug.toString(),
-					status: 'publish',
+					status: 'draft',
 					title,
 					// This adds a post meta field in template that is part of `is_custom` value calculation.
 					is_wp_suggestion: isWPSuggestion,
