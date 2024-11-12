@@ -41,9 +41,11 @@ export function useAddedBy( postType, postId ) {
 				getUser,
 				getEditedEntityRecord,
 			} = select( coreStore );
+			const _postType =
+				typeof postType === 'string' ? 'templates' : postType;
 			const template = getEditedEntityRecord(
-				'postType',
-				postType,
+				_postType === 'templates' ? 'root' : 'postType',
+				_postType,
 				postId
 			);
 			const originalSource = template?.original_source;

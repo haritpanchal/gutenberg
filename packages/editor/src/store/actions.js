@@ -187,6 +187,7 @@ export const editPost =
 	( edits, options ) =>
 	( { select, registry } ) => {
 		const { id, type } = select.getCurrentPost();
+		console.log( id, type );
 		registry
 			.dispatch( coreStore )
 			.editEntityRecord( 'postType', type, id, edits, options );

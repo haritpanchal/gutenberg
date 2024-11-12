@@ -133,10 +133,18 @@ export default function PageTemplates() {
 		} ) );
 	}, [ activeView ] );
 
+	const root = activeView === 'user' ? 'postType' : 'root';
+	const kind = activeView === 'user' ? TEMPLATE_POST_TYPE : 'templates';
+
+	console.log( root, kind );
+
 	const { records, isResolving: isLoadingData } =
-		useEntityRecordsWithPermissions( 'postType', TEMPLATE_POST_TYPE, {
+		useEntityRecordsWithPermissions( root, kind, {
 			per_page: -1,
 		} );
+
+	console.log( records );
+
 	const history = useHistory();
 	const onChangeSelection = useCallback(
 		( items ) => {

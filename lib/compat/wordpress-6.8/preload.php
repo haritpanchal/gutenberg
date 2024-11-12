@@ -36,6 +36,11 @@ function gutenberg_block_editor_preload_paths_6_8( $paths, $context ) {
 		);
 		$paths[] = '/wp/v2/templates/lookup?slug=front-page';
 		$paths[] = '/wp/v2/templates/lookup?slug=home';
+
+		// remove /wp/v2/templates?context=edit&per_page=-1
+		$paths = array_filter( $paths, function( $path ) {
+			return $path !== '/wp/v2/templates?context=edit&per_page=-1';
+		} );
 	}
 
 	// Preload theme and global styles paths.
@@ -72,3 +77,26 @@ function gutenberg_block_editor_preload_paths_6_8( $paths, $context ) {
 	return $paths;
 }
 add_filter( 'block_editor_rest_api_preload_paths', 'gutenberg_block_editor_preload_paths_6_8', 10, 2 );
+
+function modify_custom_post_type_args( $args, $post_type ) {
+	if ( 'wp_template' === $post_type ) {
+		$args['rest_base'] = 'wp_template';
+		$args['rest_controller_class'] = 'WP_REST_Posts_Controller';
+		$args['autosave_rest_controller_class'] = null;
+		$args['revisions_rest_controller_class'] = null;
+	}
+	return $args;
+}
+
+add_filter( 'register_post_type_args', 'modify_custom_post_type_args', 10, 2 );
+
+function my_custom_register_route() {
+	// This should later be changed in core so we don't need initialise
+	// WP_REST_Templates_Controller with a post type.
+	global $wp_post_types;
+	$wp_post_types['wp_template']->rest_base = 'templates';
+	$controller = new WP_REST_Templates_Controller( 'wp_template' );
+	$wp_post_types['wp_template']->rest_base = 'wp_template';
+	$controller->register_routes();
+}
+add_action( 'rest_api_init', 'my_custom_register_route' );

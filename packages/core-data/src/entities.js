@@ -139,6 +139,14 @@ export const rootEntitiesConfig = [
 		plural: 'users',
 	},
 	{
+		label: __( 'Static templates' ),
+		name: 'templates',
+		kind: 'root',
+		baseURL: '/wp/v2/templates',
+		baseURLParams: { context: 'edit' },
+		plural: 'templates',
+	},
+	{
 		name: 'comment',
 		kind: 'root',
 		baseURL: '/wp/v2/comments',
@@ -358,7 +366,6 @@ async function loadPostTypeEntities() {
 		};
 	} );
 }
-
 /**
  * Returns the list of the taxonomies entities.
  *
