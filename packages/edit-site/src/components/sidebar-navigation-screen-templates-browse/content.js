@@ -34,9 +34,10 @@ export default function DataviewsTemplatesSidebarContent( {
 	activeView,
 	title,
 } ) {
-	const { records } = useEntityRecords( 'root', 'templates', {
+	const { records } = useEntityRecords( 'postType', '_wp_static_template', {
 		per_page: -1,
 	} );
+	console.log( records );
 	const firstItemPerAuthorText = useMemo( () => {
 		const firstItemPerAuthor = records?.reduce( ( acc, template ) => {
 			const author = template.author_text;

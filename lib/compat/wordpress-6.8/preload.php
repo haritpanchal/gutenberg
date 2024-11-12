@@ -34,8 +34,8 @@ function gutenberg_block_editor_preload_paths_6_8( $paths, $context ) {
 				'url',
 			)
 		);
-		$paths[] = '/wp/v2/templates/lookup?slug=front-page';
-		$paths[] = '/wp/v2/templates/lookup?slug=home';
+		// $paths[] = '/wp/v2/templates/lookup?slug=front-page';
+		// $paths[] = '/wp/v2/templates/lookup?slug=home';
 
 		// remove /wp/v2/templates?context=edit&per_page=-1
 		$paths = array_filter( $paths, function( $path ) {
@@ -90,13 +90,37 @@ function modify_custom_post_type_args( $args, $post_type ) {
 
 add_filter( 'register_post_type_args', 'modify_custom_post_type_args', 10, 2 );
 
-function my_custom_register_route() {
-	// This should later be changed in core so we don't need initialise
-	// WP_REST_Templates_Controller with a post type.
-	global $wp_post_types;
-	$wp_post_types['wp_template']->rest_base = 'templates';
-	$controller = new WP_REST_Templates_Controller( 'wp_template' );
-	$wp_post_types['wp_template']->rest_base = 'wp_template';
-	$controller->register_routes();
+// function my_custom_register_route() {
+// 	// This should later be changed in core so we don't need initialise
+// 	// WP_REST_Templates_Controller with a post type.
+// 	global $wp_post_types;
+// 	$wp_post_types['wp_template']->rest_base = 'templates';
+// 	$controller = new WP_REST_Templates_Controller( 'wp_template' );
+// 	$wp_post_types['wp_template']->rest_base = 'wp_template';
+// 	$controller->register_routes();
+// }
+// add_action( 'rest_api_init', 'my_custom_register_route' );
+
+class Gutenberg_REST_Templates_Controller extends WP_REST_Templates_Controller {
+	public function __construct( $post_type ) {
+		parent::__construct( $post_type );
+	}
+
+	public function prepare_item_for_response( $item, $request ) {
+		$return = parent::prepare_item_for_response( $item, $request );
+		$return->type = '_wp_static_template';
+		return $return;
+	}
 }
-add_action( 'rest_api_init', 'my_custom_register_route' );
+
+function wporg_custom_post_type() {
+	global $wp_post_types;
+	$wp_post_types['_wp_static_template'] = clone $wp_post_types['wp_template'];
+	$wp_post_types['_wp_static_template']->name = '_wp_static_template';
+	$wp_post_types['_wp_static_template']->rest_base = 'templates';
+	$wp_post_types['_wp_static_template']->rest_controller_class = 'WP_REST_Templates_Controller';
+	$wp_post_types['wp_template']->rest_base = 'templates';
+	$wp_post_types['_wp_static_template']->rest_controller = new Gutenberg_REST_Templates_Controller( 'wp_template' );
+	$wp_post_types['wp_template']->rest_base = 'wp_template';
+}
+add_action('init', 'wporg_custom_post_type');

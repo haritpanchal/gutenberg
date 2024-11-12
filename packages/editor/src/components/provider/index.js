@@ -164,6 +164,7 @@ export const ExperimentalEditorProvider = withRegistryProvider(
 		BlockEditorProviderComponent = ExperimentalBlockEditorProvider,
 		__unstableTemplate: template,
 	} ) => {
+		console.log( 'provider', post );
 		const { editorSettings, selection, isReady, mode, postTypeEntities } =
 			useSelect(
 				( select ) => {

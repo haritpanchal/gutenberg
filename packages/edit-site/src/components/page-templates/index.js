@@ -133,17 +133,15 @@ export default function PageTemplates() {
 		} ) );
 	}, [ activeView ] );
 
-	const root = activeView === 'user' ? 'postType' : 'root';
-	const kind = activeView === 'user' ? TEMPLATE_POST_TYPE : 'templates';
-
-	console.log( root, kind );
+	const kind =
+		activeView === 'user' ? TEMPLATE_POST_TYPE : '_wp_static_template';
 
 	const { records, isResolving: isLoadingData } =
-		useEntityRecordsWithPermissions( root, kind, {
+		useEntityRecordsWithPermissions( 'postType', kind, {
 			per_page: -1,
 		} );
 
-	console.log( records );
+	console.log( kind, records );
 
 	const history = useHistory();
 	const onChangeSelection = useCallback(

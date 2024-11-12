@@ -49,7 +49,16 @@ function PreviewField( { item } ) {
 	// the block editor settings are needed in context where we don't have the block editor.
 	// Explore how we can solve this in a better way.
 	return (
-		<EditorProvider post={ item } settings={ settings }>
+		<EditorProvider
+			post={ {
+				...item,
+				type:
+					typeof item.type === 'string'
+						? '_wp_static_template'
+						: 'wp_template',
+			} }
+			settings={ settings }
+		>
 			<div
 				className="page-templates-preview-field"
 				style={ { backgroundColor } }
