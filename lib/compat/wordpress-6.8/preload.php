@@ -211,3 +211,44 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 		return $this->prepare_item_for_response( $template, $request );
 	}
 }
+
+function gutenberg_set_active_template_theme( $post_id ) {
+	// Get the post object
+	$post = get_post( $post_id );
+
+	// Until we refactor core, we must set the wp_theme to the active theme when
+	// activating a template.
+	if ( $post->post_type === 'wp_template' ) {
+		if ( $post->post_status === 'publish' ) {
+			wp_set_post_terms( $post_id, get_stylesheet(), 'wp_theme' );
+			// Unpublish all other templates for slug
+			$other_templates = get_posts( array(
+				'post_type' => 'wp_template',
+				'post_status' => 'publish',
+				'name' => $post->post_name,
+			) );
+			foreach ( $other_templates as $other_template ) {
+				if ( $other_template->ID !== $post_id ) {
+					wp_update_post( array(
+						'ID' => $other_template->ID,
+						'post_status' => 'draft',
+					) );
+				}
+			}
+		} else {
+			// remove all wp_theme terms
+			$terms = wp_get_post_terms( $post_id, 'wp_theme' );
+			foreach ( $terms as $term ) {
+				wp_remove_object_terms( $post_id, $term->term_id, 'wp_theme' );
+			}
+		}
+	}
+}
+
+add_action( 'save_post', 'gutenberg_set_active_template_theme' );
+
+function gutenberg_allow_template_slugs_to_be_duplicated( $override, $slug, $post_id, $post_status, $post_type ) {
+	return $post_type === 'wp_template' ? $slug : $override;
+}
+
+add_filter( 'pre_wp_unique_post_slug', 'gutenberg_allow_template_slugs_to_be_duplicated', 10, 5 );
