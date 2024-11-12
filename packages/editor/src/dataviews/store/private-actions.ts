@@ -22,7 +22,6 @@ import {
 	restorePost,
 	trashPost,
 	renamePost,
-	resetPost,
 	deletePost,
 } from '@wordpress/fields';
 import duplicateTemplatePart from '../actions/duplicate-template-part';
@@ -98,7 +97,7 @@ export const registerPostTypeActions =
 				: undefined,
 			// @ts-ignore
 			globalThis.IS_GUTENBERG_PLUGIN
-				? ! [ 'wp_template', 'wp_block', 'wp_template_part' ].includes(
+				? ! [ 'wp_block', 'wp_template_part' ].includes(
 						postTypeConfig.slug
 				  ) &&
 				  canCreate &&
@@ -118,7 +117,7 @@ export const registerPostTypeActions =
 				: undefined,
 			postTypeConfig.slug === 'wp_block' ? exportPattern : undefined,
 			restorePost,
-			resetPost,
+			// resetPost,
 			deletePost,
 			trashPost,
 			permanentlyDeletePost,

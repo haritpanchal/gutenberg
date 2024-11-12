@@ -36,7 +36,7 @@ function Editor( {
 			const { getEntityRecord, hasFinishedResolution } =
 				select( coreStore );
 			let _postType = postType;
-			if ( typeof postType === 'string' ) {
+			if ( typeof postId === 'string' && ! /^\d+$/.test( postId ) ) {
 				_postType = '_wp_static_template';
 			}
 			return {

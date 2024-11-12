@@ -90,26 +90,97 @@ function modify_custom_post_type_args( $args, $post_type ) {
 
 add_filter( 'register_post_type_args', 'modify_custom_post_type_args', 10, 2 );
 
-// function my_custom_register_route() {
-// 	// This should later be changed in core so we don't need initialise
-// 	// WP_REST_Templates_Controller with a post type.
-// 	global $wp_post_types;
-// 	$wp_post_types['wp_template']->rest_base = 'templates';
-// 	$controller = new WP_REST_Templates_Controller( 'wp_template' );
-// 	$wp_post_types['wp_template']->rest_base = 'wp_template';
-// 	$controller->register_routes();
-// }
-// add_action( 'rest_api_init', 'my_custom_register_route' );
+function my_custom_register_route() {
+	// This should later be changed in core so we don't need initialise
+	// WP_REST_Templates_Controller with a post type.
+	global $wp_post_types;
+	$wp_post_types['wp_template']->rest_base = 'templates';
+	$controller = new WP_REST_Templates_Controller( 'wp_template' );
+	$wp_post_types['wp_template']->rest_base = 'wp_template';
+	$controller->register_routes();
+}
+add_action( 'rest_api_init', 'my_custom_register_route' );
 
-class Gutenberg_REST_Templates_Controller extends WP_REST_Templates_Controller {
+class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Controller {
 	public function __construct( $post_type ) {
 		parent::__construct( $post_type );
 	}
 
-	public function prepare_item_for_response( $item, $request ) {
-		$return = parent::prepare_item_for_response( $item, $request );
-		$return->type = '_wp_static_template';
-		return $return;
+	public function register_routes() {
+		// Lists all templates.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
+
+		// Lists/updates a single template based on the given id.
+		register_rest_route(
+			$this->namespace,
+			// The route.
+			sprintf(
+				'/%s/(?P<id>%s%s)',
+				$this->rest_base,
+				/*
+				 * Matches theme's directory: `/themes/<subdirectory>/<theme>/` or `/themes/<theme>/`.
+				 * Excludes invalid directory name characters: `/:<>*?"|`.
+				 */
+				'([^\/:<>\*\?"\|]+(?:\/[^\/:<>\*\?"\|]+)?)',
+				// Matches the template name.
+				'[\/\w%-]+'
+			),
+			array(
+				'args'   => array(
+					'id' => array(
+						'description'       => __( 'The id of a template' ),
+						'type'              => 'string',
+						'sanitize_callback' => array( $this, '_sanitize_template_id' ),
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+					'args'                => array(
+						'context' => $this->get_context_param( array( 'default' => 'view' ) ),
+					),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
+	}
+
+	public function get_items( $request ) {
+		$template_files        = _get_block_templates_files( 'wp_template', $query );
+		foreach ( $template_files as $template_file ) {
+			$query_result[] = _build_block_template_result_from_file( $template_file, 'wp_template' );
+		}
+
+		$templates = array();
+		foreach ( $query_result as $template ) {
+			$data        = $this->prepare_item_for_response( $template, $request );
+			$templates[] = $this->prepare_response_for_collection( $data );
+		}
+
+		return rest_ensure_response( $templates );
+	}
+
+	public function get_item( $request ) {
+		$template = get_block_file_template( $request['id'], 'wp_template' );
+
+		if ( ! $template ) {
+			return new WP_Error( 'rest_template_not_found', __( 'No templates exist with that id.' ), array( 'status' => 404 ) );
+		}
+
+		return $this->prepare_item_for_response( $template, $request );
 	}
 }
 
@@ -117,10 +188,10 @@ function wporg_custom_post_type() {
 	global $wp_post_types;
 	$wp_post_types['_wp_static_template'] = clone $wp_post_types['wp_template'];
 	$wp_post_types['_wp_static_template']->name = '_wp_static_template';
-	$wp_post_types['_wp_static_template']->rest_base = 'templates';
-	$wp_post_types['_wp_static_template']->rest_controller_class = 'WP_REST_Templates_Controller';
-	$wp_post_types['wp_template']->rest_base = 'templates';
-	$wp_post_types['_wp_static_template']->rest_controller = new Gutenberg_REST_Templates_Controller( 'wp_template' );
-	$wp_post_types['wp_template']->rest_base = 'wp_template';
+	$wp_post_types['_wp_static_template']->rest_base = '_wp_static_template';
+	$wp_post_types['_wp_static_template']->rest_controller_class = 'Gutenberg_REST_Static_Templates_Controller';
+	// $wp_post_types['wp_template']->rest_base = 'templates';
+	// $wp_post_types['_wp_static_template']->rest_controller = new Gutenberg_REST_Static_Templates_Controller( '_wp_static_template' );
+	// $wp_post_types['wp_template']->rest_base = 'wp_template';
 }
 add_action('init', 'wporg_custom_post_type');

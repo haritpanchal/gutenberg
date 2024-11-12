@@ -188,7 +188,7 @@ export const editPost =
 	( { select, registry } ) => {
 		let { id, type } = select.getCurrentPost();
 		// To do: investigate why this is still wp_template.
-		if ( typeof type === 'string' ) {
+		if ( typeof id === 'string' ) {
 			type = '_wp_static_template';
 		}
 		registry

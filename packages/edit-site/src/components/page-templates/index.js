@@ -105,7 +105,7 @@ export default function PageTemplates() {
 			layout: defaultLayouts[ usedType ].layout,
 			fields: defaultLayouts[ usedType ].fields,
 			filters:
-				activeView !== 'all'
+				activeView !== 'user'
 					? [
 							{
 								field: 'author',
@@ -121,7 +121,7 @@ export default function PageTemplates() {
 		setView( ( currentView ) => ( {
 			...currentView,
 			filters:
-				activeView !== 'all'
+				activeView !== 'user'
 					? [
 							{
 								field: 'author',
@@ -138,6 +138,7 @@ export default function PageTemplates() {
 
 	const { records, isResolving: isLoadingData } =
 		useEntityRecordsWithPermissions( 'postType', kind, {
+			// To do: for user templates, we want server side pagination.
 			per_page: -1,
 		} );
 
@@ -192,8 +193,11 @@ export default function PageTemplates() {
 	} );
 	const editAction = useEditPostAction();
 	const actions = useMemo(
-		() => [ editAction, ...postTypeActions ],
-		[ postTypeActions, editAction ]
+		() =>
+			activeView === 'user'
+				? [ editAction, ...postTypeActions ]
+				: postTypeActions,
+		[ postTypeActions, editAction, activeView ]
 	);
 
 	const onChangeView = useCallback(

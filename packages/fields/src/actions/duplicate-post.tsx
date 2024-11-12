@@ -56,7 +56,7 @@ const duplicatePost: Action< BasePost > = {
 			}
 
 			const newItemOject = {
-				status: 'draft',
+				status: item.type === 'wp_template' ? 'publish' : 'draft',
 				title: item.title,
 				slug: item.title || __( 'No title' ),
 				comment_status: item.comment_status,
