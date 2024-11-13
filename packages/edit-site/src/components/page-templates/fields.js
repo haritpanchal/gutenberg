@@ -181,11 +181,23 @@ export const activeField = {
 	label: __( 'Active' ),
 	id: 'active',
 	getValue: ( { item } ) => item.status === 'publish',
-	render: ( { item } ) => ( item.status === 'publish' ? 'Yes' : 'No' ),
+	render: ( { item } ) => {
+		return (
+			<span
+				className={ `is-${
+					item.status === 'publish' ? 'active' : 'inactive'
+				}` }
+			>
+				{ item.status === 'publish'
+					? __( 'Active' )
+					: __( 'Inactive' ) }
+			</span>
+		);
+	},
 };
 
 export const slugField = {
-	label: __( 'Slug' ),
+	label: __( 'Template Type' ),
 	id: 'slug',
 	getValue: ( { item } ) => item.slug,
 	render: function Render( { item } ) {

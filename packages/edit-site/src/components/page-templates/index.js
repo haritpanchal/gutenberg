@@ -74,6 +74,7 @@ const defaultLayouts = {
 			mediaField: 'preview',
 			primaryField: 'title',
 			columnFields: [ 'description' ],
+			badgeFields: [ 'active', 'slug' ],
 		},
 	},
 	[ LAYOUT_LIST ]: {
