@@ -84,15 +84,19 @@ add_filter( 'block_editor_rest_api_preload_paths', 'gutenberg_block_editor_prelo
 
 function gutenberg_modify_wp_template_post_type_args( $args, $post_type ) {
 	if ( 'wp_template' === $post_type ) {
-		$args['rest_base'] = 'wp_template';
-		$args['rest_controller_class'] = 'WP_REST_Posts_Controller';
-		$args['autosave_rest_controller_class'] = null;
+		$args['rest_base']                       = 'wp_template';
+		$args['rest_controller_class']           = 'WP_REST_Posts_Controller';
+		$args['autosave_rest_controller_class']  = null;
 		$args['revisions_rest_controller_class'] = null;
-		register_meta( $post_type, 'origin', array(
-			'show_in_rest' => true,
-			'single' => true,
-			'type' => 'string',
-		) );
+		register_meta(
+			$post_type,
+			'origin',
+			array(
+				'show_in_rest' => true,
+				'single'       => true,
+				'type'         => 'string',
+			)
+		);
 	}
 	return $args;
 }
@@ -109,7 +113,7 @@ function gutenberg_maintain_templates_routes() {
 	// WP_REST_Templates_Controller with a post type.
 	global $wp_post_types;
 	$wp_post_types['wp_template']->rest_base = 'templates';
-	$controller = new WP_REST_Templates_Controller( 'wp_template' );
+	$controller                              = new WP_REST_Templates_Controller( 'wp_template' );
 	$wp_post_types['wp_template']->rest_base = 'wp_template';
 	$controller->register_routes();
 }
@@ -122,9 +126,9 @@ add_action( 'rest_api_init', 'gutenberg_maintain_templates_routes' );
 
 function gutenberg_setup_static_template() {
 	global $wp_post_types;
-	$wp_post_types['_wp_static_template'] = clone $wp_post_types['wp_template'];
-	$wp_post_types['_wp_static_template']->name = '_wp_static_template';
-	$wp_post_types['_wp_static_template']->rest_base = '_wp_static_template';
+	$wp_post_types['_wp_static_template']                          = clone $wp_post_types['wp_template'];
+	$wp_post_types['_wp_static_template']->name =                  '_wp_static_template';
+	$wp_post_types['_wp_static_template']->rest_base =             '_wp_static_template';
 	$wp_post_types['_wp_static_template']->rest_controller_class = 'Gutenberg_REST_Static_Templates_Controller';
 }
 add_action( 'init', 'gutenberg_setup_static_template' );
