@@ -32,6 +32,7 @@ import {
 	previewField,
 	titleField,
 	activeField,
+	slugField,
 } from './fields';
 
 const { usePostActions } = unlock( editorPrivateApis );
@@ -42,7 +43,7 @@ const EMPTY_ARRAY = [];
 
 const defaultLayouts = {
 	[ LAYOUT_TABLE ]: {
-		fields: [ 'template', 'author', 'active' ],
+		fields: [ 'template', 'author', 'active', 'slug' ],
 		layout: {
 			primaryField: 'title',
 			combinedFields: [
@@ -68,7 +69,7 @@ const defaultLayouts = {
 		},
 	},
 	[ LAYOUT_GRID ]: {
-		fields: [ 'title', 'description', 'author', 'active' ],
+		fields: [ 'title', 'description', 'author', 'active', 'slug' ],
 		layout: {
 			mediaField: 'preview',
 			primaryField: 'title',
@@ -76,7 +77,7 @@ const defaultLayouts = {
 		},
 	},
 	[ LAYOUT_LIST ]: {
-		fields: [ 'title', 'description', 'author', 'active' ],
+		fields: [ 'title', 'description', 'author', 'active', 'slug' ],
 		layout: {
 			primaryField: 'title',
 		},
@@ -187,6 +188,7 @@ export default function PageTemplates() {
 		];
 		if ( activeView === 'user' ) {
 			_fields.push( activeField );
+			_fields.push( slugField );
 		}
 		return _fields;
 	}, [ authors, activeView ] );
