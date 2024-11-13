@@ -35,9 +35,6 @@ export const useSetActiveTemplateAction = () => {
 					item.id,
 					{
 						status: 'publish',
-						meta: {
-							origin: 'theme',
-						},
 					},
 					{ throwOnError: true }
 				);
