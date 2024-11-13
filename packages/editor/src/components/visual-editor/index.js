@@ -60,6 +60,7 @@ const DESIGN_POST_TYPES = [
 	TEMPLATE_POST_TYPE,
 	NAVIGATION_POST_TYPE,
 	TEMPLATE_PART_POST_TYPE,
+	'_wp_static_template',
 ];
 
 /**

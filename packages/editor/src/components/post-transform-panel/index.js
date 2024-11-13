@@ -79,7 +79,11 @@ export default function PostTransformPanel() {
 	}, [] );
 
 	if (
-		! [ TEMPLATE_PART_POST_TYPE, TEMPLATE_POST_TYPE ].includes( postType )
+		! [
+			TEMPLATE_PART_POST_TYPE,
+			TEMPLATE_POST_TYPE,
+			'_wp_static_template',
+		].includes( postType )
 	) {
 		return null;
 	}

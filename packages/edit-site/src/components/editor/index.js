@@ -6,7 +6,7 @@ import clsx from 'clsx';
 /**
  * WordPress dependencies
  */
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useDispatch, useSelect, useRegistry } from '@wordpress/data';
 import { Button, __unstableMotion as motion } from '@wordpress/components';
 import { useInstanceId, useReducedMotion } from '@wordpress/compose';
 import {
@@ -117,6 +117,7 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 			hasSiteIcon: !! siteData?.site_icon_url,
 		};
 	}, [] );
+	const registry = useRegistry();
 	const postWithTemplate = !! context?.postId;
 	useEditorTitle(
 		postWithTemplate ? context.postType : postType,
@@ -209,6 +210,46 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 		duration: disableMotion ? 0 : 0.2,
 	};
 
+	let _postType = postWithTemplate ? context.postType : postType;
+	const _postId = postWithTemplate ? context.postId : postId;
+
+	if ( typeof postId === 'string' && ! /^\d+$/.test( postId ) ) {
+		_postType = '_wp_static_template';
+	}
+
+	let customSaveButton;
+
+	if ( _isPreviewingTheme ) {
+		customSaveButton = <SaveButton size="compact" />;
+	} else if ( _postType === '_wp_static_template' ) {
+		customSaveButton = (
+			<Button
+				__next40pxDefaultSize
+				variant="primary"
+				size="compact"
+				onClick={ async () => {
+					const currentPost = await registry
+						.resolveSelect( coreDataStore )
+						.getEntityRecord( 'postType', _postType, _postId );
+					const newPost = await registry
+						.dispatch( coreDataStore )
+						.saveEntityRecord( 'postType', 'wp_template', {
+							...currentPost,
+							id: undefined,
+							type: 'wp_template',
+						} );
+					history.push( {
+						postId: newPost.id,
+						postType: newPost.type,
+						canvas: 'edit',
+					} );
+				} }
+			>
+				{ __( 'Duplicate' ) }
+			</Button>
+		);
+	}
+
 	return (
 		<>
 			<GlobalStylesRenderer
@@ -224,21 +265,24 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 			) }
 			{ isReady && (
 				<Editor
-					postType={ postWithTemplate ? context.postType : postType }
-					postId={ postWithTemplate ? context.postId : postId }
+					postType={ postType }
+					postId={ postId }
 					templateId={ postWithTemplate ? postId : undefined }
-					settings={ settings }
+					settings={ {
+						...settings,
+						defaultRenderingMode: 'template-locked',
+					} }
 					className={ clsx( 'edit-site-editor__editor-interface', {
 						'show-icon-labels': showIconLabels,
 					} ) }
 					styles={ styles }
-					customSaveButton={
-						_isPreviewingTheme && <SaveButton size="compact" />
-					}
+					customSaveButton={ customSaveButton }
 					customSavePanel={ _isPreviewingTheme && <SavePanel /> }
-					forceDisableBlockTools={ ! hasDefaultEditorCanvasView }
+					forceDisableBlockTools={
+						! hasDefaultEditorCanvasView ||
+						postType === '_wp_static_template'
+					}
 					title={ title }
-					iframeProps={ iframeProps }
 					onActionPerformed={ onActionPerformed }
 					extraSidebarPanels={
 						! postWithTemplate && (

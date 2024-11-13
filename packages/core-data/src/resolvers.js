@@ -799,18 +799,22 @@ export const getDefaultTemplateId =
 		// Wait for the the entities config to be loaded, otherwise receiving
 		// the template as an entity will not work.
 		await resolveSelect.getEntitiesConfig( 'postType' );
+		const id = template?.wp_id || template?.id;
 		// Endpoint may return an empty object if no template is found.
-		if ( template?.id ) {
+		if ( id ) {
+			template.id = id;
+			template.type =
+				typeof id === 'string' ? '_wp_static_template' : 'wp_template';
 			registry.batch( () => {
-				dispatch.receiveDefaultTemplateId( query, template.id );
-				dispatch.receiveEntityRecords( 'postType', 'wp_template', [
+				dispatch.receiveDefaultTemplateId( query, id );
+				dispatch.receiveEntityRecords( 'postType', template.type, [
 					template,
 				] );
 				// Avoid further network requests.
 				dispatch.finishResolution( 'getEntityRecord', [
 					'postType',
-					'wp_template',
-					template.id,
+					template.type,
+					id,
 				] );
 			} );
 		}

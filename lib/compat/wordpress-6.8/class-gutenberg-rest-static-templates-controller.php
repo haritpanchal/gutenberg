@@ -51,6 +51,10 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 		parent::__construct( $post_type );
 	}
 
+	protected function get_available_actions() {
+		return array();
+	}
+
 	public function register_routes() {
 		// Lists all templates.
 		register_rest_route(
@@ -111,6 +115,7 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 
 		$templates = array();
 		foreach ( $query_result as $template ) {
+			$template->type = '_wp_static_template';
 			$data        = $this->prepare_item_for_response( $template, $request );
 			$templates[] = $this->prepare_response_for_collection( $data );
 		}
@@ -120,6 +125,7 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 
 	public function get_item( $request ) {
 		$template = get_block_file_template( $request['id'], 'wp_template' );
+		$template->type = '_wp_static_template';
 
 		if ( ! $template ) {
 			return new WP_Error( 'rest_template_not_found', __( 'No templates exist with that id.' ), array( 'status' => 404 ) );

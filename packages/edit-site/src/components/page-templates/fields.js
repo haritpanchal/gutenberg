@@ -37,7 +37,8 @@ function PreviewField( { item } ) {
 	}, [ item.content.raw ] );
 	const { onClick } = useLink( {
 		postId: item.id,
-		postType: item.type,
+		postType:
+			typeof item.id === 'string' ? '_wp_static_template' : 'wp_template',
 		canvas: 'edit',
 	} );
 
@@ -64,31 +65,19 @@ function PreviewField( { item } ) {
 				className="page-templates-preview-field"
 				style={ { backgroundColor } }
 			>
-				{ typeof item.id !== 'string' && (
-					<button
-						className="page-templates-preview-field__button"
-						type="button"
-						onClick={ onClick }
-						aria-label={ item.title?.rendered || item.title }
-					>
-						{ isEmpty && __( 'Empty template' ) }
-						{ ! isEmpty && (
-							<BlockPreview.Async>
-								<BlockPreview blocks={ blocks } />
-							</BlockPreview.Async>
-						) }
-					</button>
-				) }
-				{ typeof item.id === 'string' && (
-					<>
-						{ isEmpty && __( 'Empty template' ) }
-						{ ! isEmpty && (
-							<BlockPreview.Async>
-								<BlockPreview blocks={ blocks } />
-							</BlockPreview.Async>
-						) }
-					</>
-				) }
+				<button
+					className="page-templates-preview-field__button"
+					type="button"
+					onClick={ onClick }
+					aria-label={ item.title?.rendered || item.title }
+				>
+					{ isEmpty && __( 'Empty template' ) }
+					{ ! isEmpty && (
+						<BlockPreview.Async>
+							<BlockPreview blocks={ blocks } />
+						</BlockPreview.Async>
+					) }
+				</button>
 			</div>
 		</EditorProvider>
 	);

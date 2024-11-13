@@ -59,7 +59,8 @@ const duplicatePost: Action< BasePost > = {
 				status: 'draft',
 				title: item.title,
 				slug:
-					item.type === 'wp_template'
+					item.type === 'wp_template' ||
+					item.type === '_wp_static_template'
 						? item.slug
 						: item.title || __( 'No title' ),
 				comment_status: item.comment_status,
@@ -100,7 +101,9 @@ const duplicatePost: Action< BasePost > = {
 			try {
 				const newItem = await saveEntityRecord(
 					'postType',
-					item.type,
+					item.type === '_wp_static_template'
+						? 'wp_template'
+						: item.type,
 					newItemOject,
 					{ throwOnError: true }
 				);
