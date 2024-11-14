@@ -237,6 +237,9 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 							...currentPost,
 							id: undefined,
 							type: 'wp_template',
+							// It would be great if we could use auto-draft, but
+							// that doesn't seem to work.
+							status: 'draft',
 						} );
 					history.push( {
 						postId: newPost.id,

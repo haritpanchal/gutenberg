@@ -35,17 +35,23 @@ function TemplatesList( { availableTemplates, onSelect } ) {
 
 function PostTransform() {
 	const registry = useRegistry();
-	const { record, postType, postId } = useSelect( ( select ) => {
-		const { getCurrentPostType, getCurrentPostId } = select( editorStore );
-		const { getEditedEntityRecord } = select( coreStore );
-		const type = getCurrentPostType();
-		const id = getCurrentPostId();
-		return {
-			postType: type,
-			postId: id,
-			record: getEditedEntityRecord( 'postType', type, id ),
-		};
-	}, [] );
+	const { record, postType, postId, onNavigateToEntityRecord } = useSelect(
+		( select ) => {
+			const { getCurrentPostType, getCurrentPostId, getEditorSettings } =
+				select( editorStore );
+			const { getEditedEntityRecord } = select( coreStore );
+			const type = getCurrentPostType();
+			const id = getCurrentPostId();
+			return {
+				postType: type,
+				postId: id,
+				record: getEditedEntityRecord( 'postType', type, id ),
+				onNavigateToEntityRecord:
+					getEditorSettings().onNavigateToEntityRecord,
+			};
+		},
+		[]
+	);
 	const availablePatterns = useAvailablePatterns( record );
 	const onTemplateSelect = async ( selectedTemplate ) => {
 		const currentPost = await registry
@@ -59,9 +65,13 @@ function PostTransform() {
 				type: 'wp_template',
 				blocks: selectedTemplate.blocks,
 				content: serialize( selectedTemplate.blocks ),
+				status: 'draft',
 			} );
-		// To do, this component needs to be aware of edit-site history.
-		window.location.href = `?postId=${ newPost.id }&postType=${ newPost.type }&canvas=edit`;
+		onNavigateToEntityRecord( {
+			postId: newPost.id,
+			postType: 'wp_template',
+			focusMode: false,
+		} );
 	};
 	if ( ! availablePatterns?.length ) {
 		return null;

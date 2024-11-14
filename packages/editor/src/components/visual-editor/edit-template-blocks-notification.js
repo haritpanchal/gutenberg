@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
+import { useSelect, useRegistry } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -27,6 +27,7 @@ import { store as editorStore } from '../../store';
  *                                                                  editor iframe canvas.
  */
 export default function EditTemplateBlocksNotification( { contentRef } ) {
+	const registry = useRegistry();
 	const { onNavigateToEntityRecord, templateId } = useSelect( ( select ) => {
 		const { getEditorSettings, getCurrentTemplateId } =
 			select( editorStore );
@@ -83,12 +84,31 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		<ConfirmDialog
 			isOpen={ isDialogOpen }
 			confirmButtonText={ __( 'Edit template' ) }
-			onConfirm={ () => {
+			onConfirm={ async () => {
 				setIsDialogOpen( false );
-				onNavigateToEntityRecord( {
-					postId: templateId,
-					postType: 'wp_template',
-				} );
+				if ( templateId && typeof templateId === 'string' ) {
+					onNavigateToEntityRecord( {
+						postId: templateId,
+						postType: 'wp_template',
+					} );
+				} else {
+					const currentPost = registry
+						.select( editorStore )
+						.getCurrentPost();
+					const newPost = await registry
+						.dispatch( coreStore )
+						.saveEntityRecord( 'postType', 'wp_template', {
+							...currentPost,
+							id: undefined,
+							type: 'wp_template',
+							status: 'draft',
+						} );
+					onNavigateToEntityRecord( {
+						postId: newPost.id,
+						postType: 'wp_template',
+						focusMode: false,
+					} );
+				}
 			} }
 			onCancel={ () => setIsDialogOpen( false ) }
 			size="medium"
