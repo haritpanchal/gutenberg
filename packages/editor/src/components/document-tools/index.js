@@ -24,7 +24,11 @@ import { store as editorStore } from '../../store';
 import EditorHistoryRedo from '../editor-history/redo';
 import EditorHistoryUndo from '../editor-history/undo';
 
-function DocumentTools( { className, disableBlockTools = false } ) {
+function DocumentTools( {
+	className,
+	disableBlockTools = false,
+	removeBlockTools = false,
+} ) {
 	const { setIsInserterOpened, setIsListViewOpened } =
 		useDispatch( editorStore );
 	const {
@@ -116,7 +120,7 @@ function DocumentTools( { className, disableBlockTools = false } ) {
 			variant="unstyled"
 		>
 			<div className="editor-document-tools__left">
-				{ ! isDistractionFree && (
+				{ ! isDistractionFree && ! removeBlockTools && (
 					<ToolbarItem
 						ref={ inserterSidebarToggleRef }
 						as={ Button }
@@ -134,17 +138,19 @@ function DocumentTools( { className, disableBlockTools = false } ) {
 				) }
 				{ ( isWideViewport || ! showIconLabels ) && (
 					<>
-						{ showTools && isLargeViewport && (
-							<ToolbarItem
-								as={ ToolSelector }
-								showTooltip={ ! showIconLabels }
-								variant={
-									showIconLabels ? 'tertiary' : undefined
-								}
-								disabled={ disableBlockTools }
-								size="compact"
-							/>
-						) }
+						{ showTools &&
+							isLargeViewport &&
+							! removeBlockTools && (
+								<ToolbarItem
+									as={ ToolSelector }
+									showTooltip={ ! showIconLabels }
+									variant={
+										showIconLabels ? 'tertiary' : undefined
+									}
+									disabled={ disableBlockTools }
+									size="compact"
+								/>
+							) }
 						<ToolbarItem
 							as={ EditorHistoryUndo }
 							showTooltip={ ! showIconLabels }
@@ -157,7 +163,7 @@ function DocumentTools( { className, disableBlockTools = false } ) {
 							variant={ showIconLabels ? 'tertiary' : undefined }
 							size="compact"
 						/>
-						{ ! isDistractionFree && (
+						{ ! isDistractionFree && ! removeBlockTools && (
 							<ToolbarItem
 								as={ Button }
 								className="editor-document-tools__document-overview-toggle"

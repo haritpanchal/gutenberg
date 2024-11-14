@@ -256,11 +256,11 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 		return {
 			...settings,
 			defaultRenderingMode:
-				postType === '_wp_static_template'
+				_postType === '_wp_static_template'
 					? 'template-locked'
 					: settings.defaultRenderingMode,
 		};
-	}, [ settings, postType ] );
+	}, [ settings, _postType ] );
 
 	return (
 		<>
@@ -270,16 +270,12 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 			<EditorKeyboardShortcutsRegister />
 			{ isEditMode && <BlockKeyboardShortcuts /> }
 			{ ! isReady ? <CanvasLoader id={ loadingProgressId } /> : null }
-			{ isEditMode && (
-				<WelcomeGuide
-					postType={ postWithTemplate ? context.postType : postType }
-				/>
-			) }
+			{ isEditMode && <WelcomeGuide postType={ _postType } /> }
 			{ isReady && (
 				<Editor
-					postType={ postType }
-					postId={ postId }
-					templateId={ postWithTemplate ? postId : undefined }
+					postType={ _postType }
+					postId={ _postId }
+					templateId={ postWithTemplate ? _postId : undefined }
 					settings={ _settings }
 					className={ clsx( 'edit-site-editor__editor-interface', {
 						'show-icon-labels': showIconLabels,
@@ -287,12 +283,12 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					styles={ styles }
 					customSaveButton={ customSaveButton }
 					customSavePanel={ _isPreviewingTheme && <SavePanel /> }
-					forceDisableBlockTools={
-						! hasDefaultEditorCanvasView ||
-						postType === '_wp_static_template'
+					forceDisableBlockTools={ ! hasDefaultEditorCanvasView }
+					forceRemoveBlockTools={
+						_postType === '_wp_static_template'
 					}
-					iframeProps={ iframeProps }
 					title={ title }
+					iframeProps={ iframeProps }
 					onActionPerformed={ onActionPerformed }
 					extraSidebarPanels={
 						! postWithTemplate && (
