@@ -66,6 +66,15 @@ export const getCurrentUser =
 export const getEntityRecord =
 	( kind, name, key = '', query ) =>
 	async ( { select, dispatch, registry, resolveSelect } ) => {
+		// For back-compat, we allow querying for static templates through
+		// wp_template.
+		if (
+			kind === 'postType' &&
+			name === 'wp_template' &&
+			typeof key === 'string'
+		) {
+			name = '_wp_static_template';
+		}
 		const configs = await resolveSelect.getEntitiesConfig( kind );
 		const entityConfig = configs.find(
 			( config ) => config.name === name && config.kind === kind
@@ -819,6 +828,15 @@ export const getDefaultTemplateId =
 			} );
 		}
 	};
+
+// Whenever the active template is changed, we must lookup again.
+getDefaultTemplateId.shouldInvalidate = ( action ) => {
+	return (
+		action.type === 'RECEIVE_ITEMS' &&
+		action.kind === 'postType' &&
+		action.name === 'wp_template'
+	);
+};
 
 /**
  * Requests an entity's revisions from the REST API.
