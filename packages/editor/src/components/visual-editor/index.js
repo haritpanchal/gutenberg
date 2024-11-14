@@ -36,10 +36,11 @@ import EditTemplateBlocksNotification from './edit-template-blocks-notification'
 import ResizableEditor from '../resizable-editor';
 import useSelectNearestEditableBlock from './use-select-nearest-editable-block';
 import {
-	NAVIGATION_POST_TYPE,
+	DESIGN_POST_TYPES,
 	PATTERN_POST_TYPE,
-	TEMPLATE_PART_POST_TYPE,
 	TEMPLATE_POST_TYPE,
+	NAVIGATION_POST_TYPE,
+	TEMPLATE_PART_POST_TYPE,
 } from '../../store/constants';
 import { useZoomOutModeExit } from './use-zoom-out-mode-exit';
 
@@ -50,18 +51,6 @@ const {
 	ExperimentalBlockCanvas: BlockCanvas,
 	useFlashEditableBlocks,
 } = unlock( blockEditorPrivateApis );
-
-/**
- * These post types have a special editor where they don't allow you to fill the title
- * and they don't apply the layout styles.
- */
-const DESIGN_POST_TYPES = [
-	PATTERN_POST_TYPE,
-	TEMPLATE_POST_TYPE,
-	NAVIGATION_POST_TYPE,
-	TEMPLATE_PART_POST_TYPE,
-	'_wp_static_template',
-];
 
 /**
  * Given an array of nested blocks, find the first Post Content

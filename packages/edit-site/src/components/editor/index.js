@@ -13,6 +13,7 @@ import {
 	EditorKeyboardShortcutsRegister,
 	privateApis as editorPrivateApis,
 	store as editorStore,
+	PluginPostStatusInfo,
 } from '@wordpress/editor';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as coreDataStore } from '@wordpress/core-data';
@@ -217,42 +218,6 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 		_postType = '_wp_static_template';
 	}
 
-	let customSaveButton;
-
-	if ( _isPreviewingTheme ) {
-		customSaveButton = <SaveButton size="compact" />;
-	} else if ( _postType === '_wp_static_template' ) {
-		customSaveButton = (
-			<Button
-				__next40pxDefaultSize
-				variant="primary"
-				size="compact"
-				onClick={ async () => {
-					const currentPost = await registry
-						.resolveSelect( coreDataStore )
-						.getEntityRecord( 'postType', _postType, _postId );
-					const newPost = await registry
-						.dispatch( coreDataStore )
-						.saveEntityRecord( 'postType', 'wp_template', {
-							...currentPost,
-							id: undefined,
-							type: 'wp_template',
-							// It would be great if we could use auto-draft, but
-							// that doesn't seem to work.
-							status: 'draft',
-						} );
-					history.push( {
-						postId: newPost.id,
-						postType: newPost.type,
-						canvas: 'edit',
-					} );
-				} }
-			>
-				{ __( 'Duplicate' ) }
-			</Button>
-		);
-	}
-
 	const _settings = useMemo( () => {
 		// To do: whenever canUser cannot update the post, it should
 		// automatically set the defaultRenderingMode to 'template-locked'.
@@ -284,7 +249,9 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 						'show-icon-labels': showIconLabels,
 					} ) }
 					styles={ styles }
-					customSaveButton={ customSaveButton }
+					customSaveButton={
+						_isPreviewingTheme && <SaveButton size="compact" />
+					}
 					customSavePanel={ _isPreviewingTheme && <SavePanel /> }
 					forceDisableBlockTools={ ! hasDefaultEditorCanvasView }
 					forceRemoveBlockTools={
@@ -376,6 +343,46 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					) }
 					<SiteEditorMoreMenu />
 					{ supportsGlobalStyles && <GlobalStylesSidebar /> }
+					{ _postType === '_wp_static_template' && (
+						<PluginPostStatusInfo>
+							<Button
+								__next40pxDefaultSize
+								variant="primary"
+								size="compact"
+								onClick={ async () => {
+									const currentPost = await registry
+										.resolveSelect( coreDataStore )
+										.getEntityRecord(
+											'postType',
+											_postType,
+											_postId
+										);
+									const newPost = await registry
+										.dispatch( coreDataStore )
+										.saveEntityRecord(
+											'postType',
+											'wp_template',
+											{
+												...currentPost,
+												id: undefined,
+												type: 'wp_template',
+												// It would be great if we could
+												// use auto-draft, but that
+												// doesn't seem to work.
+												status: 'draft',
+											}
+										);
+									history.push( {
+										postId: newPost.id,
+										postType: newPost.type,
+										canvas: 'edit',
+									} );
+								} }
+							>
+								{ __( 'Fork Template' ) }
+							</Button>
+						</PluginPostStatusInfo>
+					) }
 				</Editor>
 			) }
 		</>

@@ -15,7 +15,7 @@ import { __experimentalInspectorPopoverHeader as InspectorPopoverHeader } from '
 /**
  * Internal dependencies
  */
-import { TEMPLATE_POST_TYPE } from '../../store/constants';
+import { TEMPLATE_TYPES } from '../../store/constants';
 import { store as editorStore } from '../../store';
 import PostPanelRow from '../post-panel-row';
 
@@ -32,7 +32,7 @@ export default function PostsPerPage() {
 			? getEditedEntityRecord( 'root', 'site' )
 			: undefined;
 		return {
-			isTemplate: getCurrentPostType() === TEMPLATE_POST_TYPE,
+			isTemplate: TEMPLATE_TYPES.includes( getCurrentPostType() ),
 			postSlug: getEditedPostAttribute( 'slug' ),
 			postsPerPage: siteSettings?.posts_per_page || 1,
 		};

@@ -51,10 +51,6 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 		parent::__construct( $post_type );
 	}
 
-	protected function get_available_actions() {
-		return array();
-	}
-
 	public function register_routes() {
 		// Lists all templates.
 		register_rest_route(
