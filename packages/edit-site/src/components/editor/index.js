@@ -250,6 +250,18 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 		);
 	}
 
+	const _settings = useMemo( () => {
+		// To do: whenever canUser cannot update the post, it should
+		// automatically set the defaultRenderingMode to 'template-locked'.
+		return {
+			...settings,
+			defaultRenderingMode:
+				postType === '_wp_static_template'
+					? 'template-locked'
+					: settings.defaultRenderingMode,
+		};
+	}, [ settings, postType ] );
+
 	return (
 		<>
 			<GlobalStylesRenderer
@@ -268,10 +280,7 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					postType={ postType }
 					postId={ postId }
 					templateId={ postWithTemplate ? postId : undefined }
-					settings={ {
-						...settings,
-						defaultRenderingMode: 'template-locked',
-					} }
+					settings={ _settings }
 					className={ clsx( 'edit-site-editor__editor-interface', {
 						'show-icon-labels': showIconLabels,
 					} ) }
@@ -282,6 +291,7 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 						! hasDefaultEditorCanvasView ||
 						postType === '_wp_static_template'
 					}
+					iframeProps={ iframeProps }
 					title={ title }
 					onActionPerformed={ onActionPerformed }
 					extraSidebarPanels={

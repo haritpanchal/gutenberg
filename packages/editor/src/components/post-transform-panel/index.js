@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect, useRegistry } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -34,6 +34,7 @@ function TemplatesList( { availableTemplates, onSelect } ) {
 }
 
 function PostTransform() {
+	const registry = useRegistry();
 	const { record, postType, postId } = useSelect( ( select ) => {
 		const { getCurrentPostType, getCurrentPostId } = select( editorStore );
 		const { getEditedEntityRecord } = select( coreStore );
@@ -45,13 +46,22 @@ function PostTransform() {
 			record: getEditedEntityRecord( 'postType', type, id ),
 		};
 	}, [] );
-	const { editEntityRecord } = useDispatch( coreStore );
 	const availablePatterns = useAvailablePatterns( record );
 	const onTemplateSelect = async ( selectedTemplate ) => {
-		await editEntityRecord( 'postType', postType, postId, {
-			blocks: selectedTemplate.blocks,
-			content: serialize( selectedTemplate.blocks ),
-		} );
+		const currentPost = await registry
+			.resolveSelect( coreStore )
+			.getEntityRecord( 'postType', postType, postId );
+		const newPost = await registry
+			.dispatch( coreStore )
+			.saveEntityRecord( 'postType', 'wp_template', {
+				...currentPost,
+				id: undefined,
+				type: 'wp_template',
+				blocks: selectedTemplate.blocks,
+				content: serialize( selectedTemplate.blocks ),
+			} );
+		// To do, this component needs to be aware of edit-site history.
+		window.location.href = `?postId=${ newPost.id }&postType=${ newPost.type }&canvas=edit`;
 	};
 	if ( ! availablePatterns?.length ) {
 		return null;
