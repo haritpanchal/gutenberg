@@ -41,11 +41,9 @@ export function useAddedBy( postType, postId ) {
 				getUser,
 				getEditedEntityRecord,
 			} = select( coreStore );
-			const _postType =
-				typeof postId === 'string' ? '_wp_static_template' : postType;
 			const template = getEditedEntityRecord(
 				'postType',
-				_postType,
+				postType,
 				postId
 			);
 			const originalSource = template?.original_source;

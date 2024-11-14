@@ -115,9 +115,9 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 
 		$templates = array();
 		foreach ( $query_result as $template ) {
-			$template->type = '_wp_static_template';
-			$data        = $this->prepare_item_for_response( $template, $request );
-			$templates[] = $this->prepare_response_for_collection( $data );
+			$item        = $this->prepare_item_for_response( $template, $request );
+			$item->data['type'] = '_wp_static_template';
+			$templates[] = $this->prepare_response_for_collection( $item );
 		}
 
 		return rest_ensure_response( $templates );
@@ -125,13 +125,15 @@ class Gutenberg_REST_Static_Templates_Controller extends WP_REST_Templates_Contr
 
 	public function get_item( $request ) {
 		$template = get_block_file_template( $request['id'], 'wp_template' );
-		$template->type = '_wp_static_template';
 
 		if ( ! $template ) {
 			return new WP_Error( 'rest_template_not_found', __( 'No templates exist with that id.' ), array( 'status' => 404 ) );
 		}
 
-		return $this->prepare_item_for_response( $template, $request );
+		$item = $this->prepare_item_for_response( $template, $request );
+		// adjust the template type here instead
+		$item->data['type'] = '_wp_static_template';
+		return rest_ensure_response( $item );
 	}
 }
 
