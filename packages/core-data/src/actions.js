@@ -676,7 +676,10 @@ export const saveEntityRecord =
 							),
 						};
 					}
-					if ( persistedRecord?.status === 'auto-draft' ) {
+					if (
+						! edits.status &&
+						persistedRecord?.status === 'auto-draft'
+					) {
 						edits.status = 'draft';
 					}
 					updatedRecord = await __unstableFetch( {
