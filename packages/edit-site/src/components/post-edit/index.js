@@ -79,7 +79,6 @@ function PostEditForm( { postType, postId } ) {
 				{
 					id: 'status',
 					label: __( 'Status & Visibility' ),
-					layout: 'panel',
 					children: [ 'status', 'password' ],
 				},
 				'author',
