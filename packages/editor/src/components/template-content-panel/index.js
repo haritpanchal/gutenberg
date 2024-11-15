@@ -13,7 +13,7 @@ import { useMemo } from '@wordpress/element';
  * Internal dependencies
  */
 import { unlock } from '../../lock-unlock';
-import { TEMPLATE_TYPES } from '../../store/constants';
+import { TEMPLATE_POST_TYPE } from '../../store/constants';
 import { store as editorStore } from '../../store';
 
 const { BlockQuickNavigation } = unlock( blockEditorPrivateApis );
@@ -47,7 +47,7 @@ export default function TemplateContentPanel() {
 			return {
 				postType: _postType,
 				clientIds: getPostBlocksByName(
-					TEMPLATE_TYPES.includes( _postType )
+					TEMPLATE_POST_TYPE === _postType
 						? TEMPLATE_PART_BLOCK
 						: postContentBlockTypes
 				),
@@ -60,8 +60,7 @@ export default function TemplateContentPanel() {
 	const { enableComplementaryArea } = useDispatch( interfaceStore );
 
 	if (
-		( renderingMode === 'post-only' &&
-			! TEMPLATE_TYPES.includes( postType ) ) ||
+		( renderingMode === 'post-only' && postType !== TEMPLATE_POST_TYPE ) ||
 		clientIds.length === 0
 	) {
 		return null;

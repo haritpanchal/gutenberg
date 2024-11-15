@@ -83,7 +83,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		<ConfirmDialog
 			isOpen={ isDialogOpen }
 			confirmButtonText={ __( 'Edit template' ) }
-			onConfirm={ async () => {
+			onConfirm={ () => {
 				setIsDialogOpen( false );
 				onNavigateToEntityRecord( {
 					postId: templateId,

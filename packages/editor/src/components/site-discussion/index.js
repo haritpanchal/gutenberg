@@ -17,7 +17,7 @@ import { __experimentalInspectorPopoverHeader as InspectorPopoverHeader } from '
 /**
  * Internal dependencies
  */
-import { TEMPLATE_TYPES } from '../../store/constants';
+import { TEMPLATE_POST_TYPE } from '../../store/constants';
 import PostPanelRow from '../post-panel-row';
 import { store as editorStore } from '../../store';
 
@@ -51,7 +51,7 @@ export default function SiteDiscussion() {
 				? getEditedEntityRecord( 'root', 'site' )
 				: undefined;
 			return {
-				isTemplate: TEMPLATE_TYPES.includes( getCurrentPostType() ),
+				isTemplate: getCurrentPostType() === TEMPLATE_POST_TYPE,
 				postSlug: getEditedPostAttribute( 'slug' ),
 				allowCommentsOnNewPosts:
 					siteSettings?.default_comment_status || '',
