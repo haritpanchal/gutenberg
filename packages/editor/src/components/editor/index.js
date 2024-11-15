@@ -33,10 +33,17 @@ function Editor( {
 } ) {
 	const { post, template, hasLoadedPost } = useSelect(
 		( select ) => {
-			const { getEntityRecord, hasFinishedResolution } =
-				select( coreStore );
+			const {
+				getEntityRecord,
+				hasFinishedResolution,
+				ensureEditableEntityRecord,
+			} = select( coreStore );
 			return {
-				post: getEntityRecord( 'postType', postType, postId ),
+				post: ensureEditableEntityRecord(
+					'postType',
+					postType,
+					postId
+				),
 				template: templateId
 					? getEntityRecord(
 							'postType',
@@ -44,11 +51,10 @@ function Editor( {
 							templateId
 					  )
 					: undefined,
-				hasLoadedPost: hasFinishedResolution( 'getEntityRecord', [
-					'postType',
-					postType,
-					postId,
-				] ),
+				hasLoadedPost: hasFinishedResolution(
+					'ensureEditableEntityRecord',
+					[ 'postType', postType, postId ]
+				),
 			};
 		},
 		[ postType, postId, templateId ]
@@ -78,6 +84,7 @@ function Editor( {
 					<Sidebar
 						onActionPerformed={ onActionPerformed }
 						extraPanels={ extraSidebarPanels }
+						forceRemoveBlockTools={ props.forceRemoveBlockTools }
 					/>
 				</ExperimentalEditorProvider>
 			) }

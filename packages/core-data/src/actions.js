@@ -676,6 +676,9 @@ export const saveEntityRecord =
 							),
 						};
 					}
+					if ( persistedRecord?.status === 'auto-draft' ) {
+						edits.status = 'draft';
+					}
 					updatedRecord = await __unstableFetch( {
 						path,
 						method: recordId ? 'PUT' : 'POST',
