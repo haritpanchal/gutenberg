@@ -647,10 +647,13 @@ export function registeredPostMeta( state = {}, action ) {
 	return state;
 }
 
-export function autoDraftId( state = null, action ) {
+export function templateAutoDraftId( state = {}, action ) {
 	switch ( action.type ) {
-		case 'RECEIVE_AUTO_DRAFT_ID':
-			return action.autoDraftId;
+		case 'RECEIVE_TEMPLATE_AUTO_DRAFT_ID':
+			return {
+				...state,
+				[ action.target ]: action.id,
+			};
 	}
 	return state;
 }
@@ -677,5 +680,5 @@ export default combineReducers( {
 	navigationFallbackId,
 	defaultTemplates,
 	registeredPostMeta,
-	autoDraftId,
+	templateAutoDraftId,
 } );

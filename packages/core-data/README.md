@@ -205,10 +205,6 @@ _Returns_
 
 -   `Object`: Action object.
 
-### receiveAutoDraftId
-
-Undocumented declaration.
-
 ### receiveDefaultTemplateId
 
 Returns an action object used to set the template for a given query.
@@ -265,6 +261,10 @@ _Parameters_
 -   _query_ `?Object`: Query Object.
 -   _invalidateCache_ `?boolean`: Should invalidate query caches.
 -   _meta_ `?Object`: Meta information about pagination.
+
+### receiveTemplateAutoDraftId
+
+Undocumented declaration.
 
 ### receiveThemeSupports
 
@@ -368,10 +368,6 @@ _Parameters_
 _Returns_
 
 -   `boolean | undefined`: Whether or not the user can edit, or `undefined` if the OPTIONS request is still being made.
-
-### ensureEditableEntityRecord
-
-Undocumented declaration.
 
 ### getAuthors
 
@@ -783,6 +779,10 @@ _Parameters_
 _Returns_
 
 -   `RevisionRecord[] | null`: Record.
+
+### getTemplateAutoDraftId
+
+Undocumented declaration.
 
 ### getThemeSupports
 

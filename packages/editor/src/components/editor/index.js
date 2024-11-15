@@ -33,17 +33,10 @@ function Editor( {
 } ) {
 	const { post, template, hasLoadedPost } = useSelect(
 		( select ) => {
-			const {
-				getEntityRecord,
-				hasFinishedResolution,
-				ensureEditableEntityRecord,
-			} = select( coreStore );
+			const { getEntityRecord, hasFinishedResolution } =
+				select( coreStore );
 			return {
-				post: ensureEditableEntityRecord(
-					'postType',
-					postType,
-					postId
-				),
+				post: getEntityRecord( 'postType', postType, postId ),
 				template: templateId
 					? getEntityRecord(
 							'postType',
@@ -51,10 +44,11 @@ function Editor( {
 							templateId
 					  )
 					: undefined,
-				hasLoadedPost: hasFinishedResolution(
-					'ensureEditableEntityRecord',
-					[ 'postType', postType, postId ]
-				),
+				hasLoadedPost: hasFinishedResolution( 'getEntityRecord', [
+					'postType',
+					postType,
+					postId,
+				] ),
 			};
 		},
 		[ postType, postId, templateId ]

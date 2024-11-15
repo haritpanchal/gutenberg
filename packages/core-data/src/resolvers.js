@@ -220,22 +220,25 @@ export const getEntityRecord =
 		}
 	};
 
-export const ensureEditableEntityRecord =
-	( kind, name, key = '', query ) =>
+export const getTemplateAutoDraftId =
+	( target ) =>
 	async ( { select, dispatch } ) => {
-		const record = await select.getEntityRecord( kind, name, key, query );
-		if ( name !== '_wp_static_template' ) {
-			return record;
-		}
-		const newName = 'wp_template';
-		const autoDraft = await dispatch.saveEntityRecord( kind, newName, {
-			...record,
-			id: undefined,
-			type: newName,
-			status: 'auto-draft',
-		} );
-		await dispatch.receiveAutoDraftId( autoDraft.id );
-		return autoDraft;
+		const record = await select.getEntityRecord(
+			'postType',
+			'_wp_static_template',
+			target
+		);
+		const autoDraft = await dispatch.saveEntityRecord(
+			'postType',
+			'wp_template',
+			{
+				...record,
+				id: undefined,
+				type: 'wp_template',
+				status: 'auto-draft',
+			}
+		);
+		await dispatch.receiveTemplateAutoDraftId( target, autoDraft.id );
 	};
 
 /**

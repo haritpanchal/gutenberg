@@ -1002,9 +1002,10 @@ export const receiveRevisions =
 		} );
 	};
 
-export function receiveAutoDraftId( autoDraftId ) {
+export function receiveTemplateAutoDraftId( target, id ) {
 	return {
-		type: 'RECEIVE_AUTO_DRAFT_ID',
-		autoDraftId,
+		type: 'RECEIVE_TEMPLATE_AUTO_DRAFT_ID',
+		target,
+		id,
 	};
 }

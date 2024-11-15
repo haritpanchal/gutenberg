@@ -201,6 +201,18 @@ export function useResolveEditedEntity() {
 		[ homepageId, postsPageId, hasLoadedAllDependencies, postId, postType ]
 	);
 
+	const editableResolvedTemplateId = useSelect(
+		( select ) => {
+			if ( typeof resolvedTemplateId !== 'string' ) {
+				return resolvedTemplateId;
+			}
+			return select( coreDataStore ).getTemplateAutoDraftId(
+				resolvedTemplateId
+			);
+		},
+		[ resolvedTemplateId ]
+	);
+
 	const context = useMemo( () => {
 		if ( postTypesWithoutParentTemplate.includes( postType ) && postId ) {
 			return {};
@@ -224,9 +236,9 @@ export function useResolveEditedEntity() {
 
 	if ( hasLoadedAllDependencies ) {
 		return {
-			isReady: resolvedTemplateId !== undefined,
+			isReady: editableResolvedTemplateId !== undefined,
 			postType: TEMPLATE_POST_TYPE,
-			postId: resolvedTemplateId,
+			postId: editableResolvedTemplateId,
 			context,
 		};
 	}
