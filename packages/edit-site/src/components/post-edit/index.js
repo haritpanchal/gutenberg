@@ -73,7 +73,6 @@ function PostEditForm( { postType, postId } ) {
 				{
 					id: 'featured_media',
 					layout: 'regular',
-					labelPosition: 'side',
 				},
 				'title',
 				{
