@@ -48,6 +48,7 @@ export interface State {
 	userPatternCategories: Array< UserPatternCategory >;
 	defaultTemplates: Record< string, string >;
 	registeredPostMeta: Record< string, Object >;
+	autoDraftId: number | null;
 }
 
 type EntityRecordKey = string | number;
@@ -403,6 +404,46 @@ export const getEntityRecord = createSelector(
 			]?.[ recordId ],
 			state.entities.records?.[ kind ]?.[ name ]?.queriedData
 				?.itemIsComplete[ context ]?.[ recordId ],
+		];
+	}
+) as GetEntityRecord;
+
+export const ensureEditableEntityRecord = createSelector(
+	( <
+		EntityRecord extends
+			| ET.EntityRecord< any >
+			| Partial< ET.EntityRecord< any > >,
+	>(
+		state: State,
+		kind: string,
+		name: string,
+		key: EntityRecordKey,
+		query?: GetRecordsHttpQuery
+	): EntityRecord | undefined => {
+		if ( name !== '_wp_static_template' ) {
+			return getEntityRecord( state, kind, name, key, query );
+		}
+		const { autoDraftId } = state;
+		if ( ! autoDraftId ) {
+			return undefined;
+		}
+		return getEntityRecord(
+			state,
+			kind,
+			'wp_template',
+			autoDraftId,
+			query
+		);
+	} ) as GetEntityRecord,
+	( state: State, kind, name, recordId, query ) => {
+		const context = query?.context ?? 'default';
+		return [
+			state.entities.records?.[ kind ]?.[ name ]?.queriedData?.items[
+				context
+			]?.[ recordId ],
+			state.entities.records?.[ kind ]?.[ name ]?.queriedData
+				?.itemIsComplete[ context ]?.[ recordId ],
+			state.autoDraftId,
 		];
 	}
 ) as GetEntityRecord;

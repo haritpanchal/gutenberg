@@ -998,3 +998,10 @@ export const receiveRevisions =
 			invalidateCache,
 		} );
 	};
+
+export function receiveAutoDraftId( autoDraftId ) {
+	return {
+		type: 'RECEIVE_AUTO_DRAFT_ID',
+		autoDraftId,
+	};
+}

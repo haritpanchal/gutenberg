@@ -220,6 +220,24 @@ export const getEntityRecord =
 		}
 	};
 
+export const ensureEditableEntityRecord =
+	( kind, name, key = '', query ) =>
+	async ( { select, dispatch } ) => {
+		const record = await select.getEntityRecord( kind, name, key, query );
+		if ( name !== '_wp_static_template' ) {
+			return record;
+		}
+		const newName = 'wp_template';
+		const autoDraft = await dispatch.saveEntityRecord( kind, newName, {
+			...record,
+			id: undefined,
+			type: newName,
+			status: 'auto-draft',
+		} );
+		await dispatch.receiveAutoDraftId( autoDraft.id );
+		return autoDraft;
+	};
+
 /**
  * Requests an entity's record from the REST API.
  */

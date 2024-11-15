@@ -7,7 +7,7 @@
 function gutenberg_modify_wp_template_post_type_args( $args, $post_type ) {
 	if ( 'wp_template' === $post_type ) {
 		$args['rest_base']                       = 'wp_template';
-		$args['rest_controller_class']           = 'WP_REST_Posts_Controller';
+		$args['rest_controller_class']           = 'Gutenberg_REST_Templates_Controller';
 		$args['autosave_rest_controller_class']  = null;
 		$args['revisions_rest_controller_class'] = null;
 	}
@@ -15,6 +15,20 @@ function gutenberg_modify_wp_template_post_type_args( $args, $post_type ) {
 }
 
 add_filter( 'register_post_type_args', 'gutenberg_modify_wp_template_post_type_args', 10, 2 );
+
+class Gutenberg_REST_Templates_Controller extends WP_REST_Posts_Controller {
+	protected function handle_status_param( $status, $request ) {
+		if ( $status === 'auto-draft' ) {
+			return $status;
+		}
+		return parent::handle_status_param( $status, $request );
+	}
+	protected function add_additional_fields_schema( $schema ) {
+		$schema = parent::add_additional_fields_schema( $schema );
+		$schema['properties']['status']['enum'][] = 'auto-draft';
+		return $schema;
+	}
+}
 
 // 2. We maintain the routes for /templates and /templates/lookup. I think we'll
 // need to deprecate /templates eventually, but we'll still want to be able to

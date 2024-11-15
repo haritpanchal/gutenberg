@@ -647,6 +647,14 @@ export function registeredPostMeta( state = {}, action ) {
 	return state;
 }
 
+export function autoDraftId( state = null, action ) {
+	switch ( action.type ) {
+		case 'RECEIVE_AUTO_DRAFT_ID':
+			return action.autoDraftId;
+	}
+	return state;
+}
+
 export default combineReducers( {
 	terms,
 	users,
@@ -669,4 +677,5 @@ export default combineReducers( {
 	navigationFallbackId,
 	defaultTemplates,
 	registeredPostMeta,
+	autoDraftId,
 } );

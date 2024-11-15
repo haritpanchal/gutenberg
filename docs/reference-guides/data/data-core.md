@@ -143,6 +143,10 @@ _Returns_
 
 -   `boolean | undefined`: Whether or not the user can edit, or `undefined` if the OPTIONS request is still being made.
 
+### ensureEditableEntityRecord
+
+Undocumented declaration.
+
 ### getAuthors
 
 > **Deprecated** since 11.3. Callers should use `select( 'core' ).getUsers({ who: 'authors' })` instead.
@@ -794,6 +798,10 @@ _Parameters_
 _Returns_
 
 -   `Object`: Action object.
+
+### receiveAutoDraftId
+
+Undocumented declaration.
 
 ### receiveDefaultTemplateId
 

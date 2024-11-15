@@ -205,6 +205,10 @@ _Returns_
 
 -   `Object`: Action object.
 
+### receiveAutoDraftId
+
+Undocumented declaration.
+
 ### receiveDefaultTemplateId
 
 Returns an action object used to set the template for a given query.
@@ -364,6 +368,10 @@ _Parameters_
 _Returns_
 
 -   `boolean | undefined`: Whether or not the user can edit, or `undefined` if the OPTIONS request is still being made.
+
+### ensureEditableEntityRecord
+
+Undocumented declaration.
 
 ### getAuthors
 

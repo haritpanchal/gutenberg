@@ -6,14 +6,13 @@ import clsx from 'clsx';
 /**
  * WordPress dependencies
  */
-import { useDispatch, useSelect, useRegistry } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Button, __unstableMotion as motion } from '@wordpress/components';
 import { useInstanceId, useReducedMotion } from '@wordpress/compose';
 import {
 	EditorKeyboardShortcutsRegister,
 	privateApis as editorPrivateApis,
 	store as editorStore,
-	PluginPostStatusInfo,
 } from '@wordpress/editor';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as coreDataStore } from '@wordpress/core-data';
@@ -118,7 +117,6 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 			hasSiteIcon: !! siteData?.site_icon_url,
 		};
 	}, [] );
-	const registry = useRegistry();
 	const postWithTemplate = !! context?.postId;
 	useEditorTitle(
 		postWithTemplate ? context.postType : postType,
@@ -218,18 +216,6 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 		_postType = '_wp_static_template';
 	}
 
-	const _settings = useMemo( () => {
-		// To do: whenever canUser cannot update the post, it should
-		// automatically set the defaultRenderingMode to 'template-locked'.
-		return {
-			...settings,
-			defaultRenderingMode:
-				_postType === '_wp_static_template'
-					? 'template-locked'
-					: settings.defaultRenderingMode,
-		};
-	}, [ settings, _postType ] );
-
 	return (
 		<>
 			<GlobalStylesRenderer
@@ -244,7 +230,7 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					postType={ _postType }
 					postId={ _postId }
 					templateId={ postWithTemplate ? _postId : undefined }
-					settings={ _settings }
+					settings={ settings }
 					className={ clsx( 'edit-site-editor__editor-interface', {
 						'show-icon-labels': showIconLabels,
 					} ) }
@@ -254,9 +240,6 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					}
 					customSavePanel={ _isPreviewingTheme && <SavePanel /> }
 					forceDisableBlockTools={ ! hasDefaultEditorCanvasView }
-					forceRemoveBlockTools={
-						_postType === '_wp_static_template'
-					}
 					title={ title }
 					iframeProps={ iframeProps }
 					onActionPerformed={ onActionPerformed }
@@ -343,46 +326,6 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					) }
 					<SiteEditorMoreMenu />
 					{ supportsGlobalStyles && <GlobalStylesSidebar /> }
-					{ _postType === '_wp_static_template' && (
-						<PluginPostStatusInfo>
-							<Button
-								__next40pxDefaultSize
-								variant="primary"
-								size="compact"
-								onClick={ async () => {
-									const currentPost = await registry
-										.resolveSelect( coreDataStore )
-										.getEntityRecord(
-											'postType',
-											_postType,
-											_postId
-										);
-									const newPost = await registry
-										.dispatch( coreDataStore )
-										.saveEntityRecord(
-											'postType',
-											'wp_template',
-											{
-												...currentPost,
-												id: undefined,
-												type: 'wp_template',
-												// It would be great if we could
-												// use auto-draft, but that
-												// doesn't seem to work.
-												status: 'draft',
-											}
-										);
-									history.push( {
-										postId: newPost.id,
-										postType: newPost.type,
-										canvas: 'edit',
-									} );
-								} }
-							>
-								{ __( 'Fork Template' ) }
-							</Button>
-						</PluginPostStatusInfo>
-					) }
 				</Editor>
 			) }
 		</>
