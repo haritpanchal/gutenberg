@@ -15,7 +15,7 @@ import { sidebars } from './constants';
 
 const { Tabs } = unlock( componentsPrivateApis );
 
-const SidebarHeader = ( { forceRemoveBlockTools }, ref ) => {
+const SidebarHeader = ( _, ref ) => {
 	const { documentLabel } = useSelect( ( select ) => {
 		const { getPostTypeLabel } = select( editorStore );
 
@@ -35,16 +35,14 @@ const SidebarHeader = ( { forceRemoveBlockTools }, ref ) => {
 			>
 				{ documentLabel }
 			</Tabs.Tab>
-			{ ! forceRemoveBlockTools && (
-				<Tabs.Tab
-					tabId={ sidebars.block }
-					// Used for focus management in the SettingsSidebar component.
-					data-tab-id={ sidebars.block }
-				>
-					{ /* translators: Text label for the Block Settings Sidebar tab. */ }
-					{ __( 'Block' ) }
-				</Tabs.Tab>
-			) }
+			<Tabs.Tab
+				tabId={ sidebars.block }
+				// Used for focus management in the SettingsSidebar component.
+				data-tab-id={ sidebars.block }
+			>
+				{ /* translators: Text label for the Block Settings Sidebar tab. */ }
+				{ __( 'Block' ) }
+			</Tabs.Tab>
 		</Tabs.TabList>
 	);
 };

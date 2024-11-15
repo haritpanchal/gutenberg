@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useRegistry } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -34,43 +34,23 @@ function TemplatesList( { availableTemplates, onSelect } ) {
 }
 
 function PostTransform() {
-	const registry = useRegistry();
-	const { record, postType, postId, onNavigateToEntityRecord } = useSelect(
-		( select ) => {
-			const { getCurrentPostType, getCurrentPostId, getEditorSettings } =
-				select( editorStore );
-			const { getEditedEntityRecord } = select( coreStore );
-			const type = getCurrentPostType();
-			const id = getCurrentPostId();
-			return {
-				postType: type,
-				postId: id,
-				record: getEditedEntityRecord( 'postType', type, id ),
-				onNavigateToEntityRecord:
-					getEditorSettings().onNavigateToEntityRecord,
-			};
-		},
-		[]
-	);
+	const { record, postType, postId } = useSelect( ( select ) => {
+		const { getCurrentPostType, getCurrentPostId } = select( editorStore );
+		const { getEditedEntityRecord } = select( coreStore );
+		const type = getCurrentPostType();
+		const id = getCurrentPostId();
+		return {
+			postType: type,
+			postId: id,
+			record: getEditedEntityRecord( 'postType', type, id ),
+		};
+	}, [] );
+	const { editEntityRecord } = useDispatch( coreStore );
 	const availablePatterns = useAvailablePatterns( record );
 	const onTemplateSelect = async ( selectedTemplate ) => {
-		const currentPost = await registry
-			.resolveSelect( coreStore )
-			.getEntityRecord( 'postType', postType, postId );
-		const newPost = await registry
-			.dispatch( coreStore )
-			.saveEntityRecord( 'postType', 'wp_template', {
-				...currentPost,
-				id: undefined,
-				type: 'wp_template',
-				blocks: selectedTemplate.blocks,
-				content: serialize( selectedTemplate.blocks ),
-				status: 'draft',
-			} );
-		onNavigateToEntityRecord( {
-			postId: newPost.id,
-			postType: 'wp_template',
-			focusMode: false,
+		await editEntityRecord( 'postType', postType, postId, {
+			blocks: selectedTemplate.blocks,
+			content: serialize( selectedTemplate.blocks ),
 		} );
 	};
 	if ( ! availablePatterns?.length ) {
@@ -99,11 +79,7 @@ export default function PostTransformPanel() {
 	}, [] );
 
 	if (
-		! [
-			TEMPLATE_PART_POST_TYPE,
-			TEMPLATE_POST_TYPE,
-			'_wp_static_template',
-		].includes( postType )
+		! [ TEMPLATE_PART_POST_TYPE, TEMPLATE_POST_TYPE ].includes( postType )
 	) {
 		return null;
 	}

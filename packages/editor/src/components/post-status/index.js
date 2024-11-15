@@ -26,7 +26,12 @@ import {
 /**
  * Internal dependencies
  */
-import { DESIGN_POST_TYPES } from '../../store/constants';
+import {
+	TEMPLATE_POST_TYPE,
+	TEMPLATE_PART_POST_TYPE,
+	PATTERN_POST_TYPE,
+	NAVIGATION_POST_TYPE,
+} from '../../store/constants';
 import PostPanelRow from '../post-panel-row';
 import PostSticky from '../post-sticky';
 import { PrivatePostSchedule } from '../post-schedule';
@@ -67,6 +72,13 @@ export const STATUS_OPTIONS = [
 		value: 'publish',
 		description: __( 'Visible to everyone.' ),
 	},
+];
+
+const DESIGN_POST_TYPES = [
+	TEMPLATE_POST_TYPE,
+	TEMPLATE_PART_POST_TYPE,
+	PATTERN_POST_TYPE,
+	NAVIGATION_POST_TYPE,
 ];
 
 export default function PostStatus() {

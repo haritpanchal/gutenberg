@@ -53,7 +53,6 @@ const SidebarContent = ( {
 	keyboardShortcut,
 	onActionPerformed,
 	extraPanels,
-	forceRemoveBlockTools,
 } ) => {
 	const tabListRef = useRef( null );
 	// Because `PluginSidebar` renders a `ComplementaryArea`, we
@@ -93,10 +92,7 @@ const SidebarContent = ( {
 			identifier={ tabName }
 			header={
 				<Tabs.Context.Provider value={ tabsContextValue }>
-					<SidebarHeader
-						ref={ tabListRef }
-						forceRemoveBlockTools={ forceRemoveBlockTools }
-					/>
+					<SidebarHeader ref={ tabListRef } />
 				</Tabs.Context.Provider>
 			}
 			closeLabel={ __( 'Close Settings' ) }
@@ -124,21 +120,15 @@ const SidebarContent = ( {
 					<PatternOverridesPanel />
 					{ extraPanels }
 				</Tabs.TabPanel>
-				{ ! forceRemoveBlockTools && (
-					<Tabs.TabPanel tabId={ sidebars.block } focusable={ false }>
-						<BlockInspector />
-					</Tabs.TabPanel>
-				) }
+				<Tabs.TabPanel tabId={ sidebars.block } focusable={ false }>
+					<BlockInspector />
+				</Tabs.TabPanel>
 			</Tabs.Context.Provider>
 		</PluginSidebar>
 	);
 };
 
-const Sidebar = ( {
-	extraPanels,
-	onActionPerformed,
-	forceRemoveBlockTools,
-} ) => {
+const Sidebar = ( { extraPanels, onActionPerformed } ) => {
 	useAutoSwitchEditorSidebars();
 	const { tabName, keyboardShortcut, showSummary } = useSelect(
 		( select ) => {
@@ -197,7 +187,6 @@ const Sidebar = ( {
 				showSummary={ showSummary }
 				onActionPerformed={ onActionPerformed }
 				extraPanels={ extraPanels }
-				forceRemoveBlockTools={ forceRemoveBlockTools }
 			/>
 		</Tabs>
 	);

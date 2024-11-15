@@ -51,7 +51,6 @@ function Header( {
 	customSaveButton,
 	forceIsDirty,
 	forceDisableBlockTools,
-	forceRemoveBlockTools,
 	setEntitiesSavedStatesCallback,
 	title,
 } ) {
@@ -123,7 +122,6 @@ function Header( {
 			>
 				<DocumentTools
 					disableBlockTools={ forceDisableBlockTools || isTextEditor }
-					removeBlockTools={ forceRemoveBlockTools }
 				/>
 				{ hasFixedToolbar && isLargeViewport && (
 					<CollapsibleBlockToolbar
