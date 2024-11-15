@@ -70,7 +70,11 @@ function PostEditForm( { postType, postId } ) {
 		() => ( {
 			type: 'panel',
 			fields: [
-				'featured_media',
+				{
+					id: 'featured_media',
+					layout: 'regular',
+					labelPosition: 'side',
+				},
 				'title',
 				{
 					id: 'status',
