@@ -79,14 +79,14 @@ function PanelDropdown< Item >( {
 			return field.children.map( ( child ) => {
 				if ( typeof child === 'string' ) {
 					return {
-						field: child,
+						id: child,
 					};
 				}
 				return child;
 			} );
 		}
 		// If not explicit children return the field id itself.
-		return [ { field: field.field } ];
+		return [ { id: field.id } ];
 	}, [ field ] );
 
 	// Memoize popoverProps to avoid returning a new object every time.
@@ -138,11 +138,7 @@ function PanelDropdown< Item >( {
 					>
 						{ ( FieldLayout, nestedField ) => (
 							<FieldLayout
-								key={
-									isCombinedField( nestedField )
-										? nestedField.id
-										: nestedField.field
-								}
+								key={ nestedField.id }
 								data={ data }
 								field={ nestedField }
 								onChange={ onChange }
@@ -175,10 +171,10 @@ export default function FormPanelField< Item >( {
 			const firstChildFieldId =
 				typeof children[ 0 ] === 'string'
 					? children[ 0 ]
-					: children[ 0 ].field;
+					: children[ 0 ].id;
 			return fieldDef.id === firstChildFieldId;
 		}
-		return fieldDef.id === field.field;
+		return fieldDef.id === field.id;
 	} );
 	const labelPosition = field.labelPosition ?? 'side';
 

@@ -36,7 +36,7 @@ export function DataFormLayout< Item >( {
 	const { fields: fieldDefinitions } = useContext( DataFormContext );
 
 	function getFieldDefinition( field: SimpleFormField | string ) {
-		const fieldId = typeof field === 'string' ? field : field.field;
+		const fieldId = typeof field === 'string' ? field : field.id;
 
 		return fieldDefinitions.find(
 			( fieldDefinition ) => fieldDefinition.id === fieldId
@@ -50,7 +50,7 @@ export function DataFormLayout< Item >( {
 					typeof field !== 'string'
 						? field
 						: {
-								field,
+								id: field,
 						  };
 				const fieldLayoutId = formField.layout
 					? formField.layout
@@ -79,12 +79,9 @@ export function DataFormLayout< Item >( {
 					return children( FieldLayout, formField );
 				}
 
-				const key = isCombinedField( formField )
-					? formField.id
-					: formField.field;
 				return (
 					<FieldLayout
-						key={ key }
+						key={ formField.id }
 						data={ data }
 						field={ formField }
 						onChange={ onChange }

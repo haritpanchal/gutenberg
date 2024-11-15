@@ -528,7 +528,7 @@ export interface SupportedLayouts {
 }
 
 export type SimpleFormField = {
-	field: string;
+	id: string;
 	layout?: 'regular' | 'panel';
 	labelPosition?: 'side' | 'top';
 };

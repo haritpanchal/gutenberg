@@ -52,7 +52,7 @@ export default function FormRegularField< Item >( {
 			return field.children.map( ( child ) => {
 				if ( typeof child === 'string' ) {
 					return {
-						field: child,
+						id: child,
 					};
 				}
 				return child;
@@ -79,7 +79,7 @@ export default function FormRegularField< Item >( {
 
 	const labelPosition = field.labelPosition ?? 'top';
 	const fieldDefinition = fields.find(
-		( fieldDef ) => fieldDef.id === field.field
+		( fieldDef ) => fieldDef.id === field.id
 	);
 
 	if ( ! fieldDefinition ) {

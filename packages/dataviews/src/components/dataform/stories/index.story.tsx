@@ -132,7 +132,7 @@ function toFormField(
 	return formFields.map( ( field ) => {
 		if ( typeof field === 'string' ) {
 			return {
-				field,
+				id: field,
 				layout: type,
 				labelPosition:
 					labelPosition === 'default' ? undefined : labelPosition,
@@ -176,7 +176,7 @@ export const Default = ( {
 					'title',
 					'order',
 					{
-						field: 'sticky',
+						id: 'sticky',
 						layout: 'regular',
 						labelPosition:
 							type === 'regular' && labelPosition !== 'default'
