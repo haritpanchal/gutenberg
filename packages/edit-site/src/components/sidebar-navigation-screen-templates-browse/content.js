@@ -51,7 +51,7 @@ export default function DataviewsTemplatesSidebarContent( { activeView } ) {
 		<ItemGroup>
 			<DataViewItem
 				slug="user"
-				title={ __( 'User templates' ) }
+				title={ __( 'Custom templates' ) }
 				icon={ layout }
 				isActive={ activeView === 'user' }
 				isCustom={ false }
