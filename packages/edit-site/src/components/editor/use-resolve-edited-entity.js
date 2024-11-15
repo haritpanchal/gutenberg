@@ -25,6 +25,7 @@ const postTypesWithoutParentTemplate = [
 	TEMPLATE_PART_POST_TYPE,
 	NAVIGATION_POST_TYPE,
 	PATTERN_TYPES.user,
+	'_wp_static_template',
 ];
 
 const authorizedPostTypes = [ 'page', 'post' ];
