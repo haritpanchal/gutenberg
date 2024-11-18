@@ -201,9 +201,7 @@ export default function FormPanelField< Item >( {
 	if ( labelPosition === 'top' ) {
 		return (
 			<BaseControl __nextHasNoMarginBottom>
-				<BaseControl.VisualLabel>
-					{ fieldLabel }
-				</BaseControl.VisualLabel>
+				{ fieldLabel }
 				<div>
 					<PanelDropdown
 						field={ field }
