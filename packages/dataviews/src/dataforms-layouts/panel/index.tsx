@@ -67,9 +67,11 @@ function PanelDropdown< Item >( {
 	data,
 	onChange,
 	field,
+	labelPosition = 'side',
 }: {
 	fieldDefinition: NormalizedField< Item >;
 	popoverAnchor: HTMLElement | null;
+	labelPosition: 'side' | 'top' | 'none';
 } & FormFieldProps< Item > ) {
 	const fieldLabel = isCombinedField( field )
 		? field.label
@@ -116,7 +118,11 @@ function PanelDropdown< Item >( {
 				<Button
 					className="dataforms-layouts-panel__field-control"
 					size="compact"
-					variant="tertiary"
+					variant={
+						[ 'none', 'top' ].includes( labelPosition )
+							? 'link'
+							: 'tertiary'
+					}
 					aria-expanded={ isOpen }
 					aria-label={ sprintf(
 						// translators: %s: Field name.
@@ -206,6 +212,7 @@ export default function FormPanelField< Item >( {
 						data={ data }
 						onChange={ onChange }
 						defaultLayout={ defaultLayout }
+						labelPosition={ labelPosition }
 					/>
 				</div>
 			</BaseControl>
@@ -221,6 +228,7 @@ export default function FormPanelField< Item >( {
 				data={ data }
 				onChange={ onChange }
 				defaultLayout={ defaultLayout }
+				labelPosition={ labelPosition }
 			/>
 		);
 	}
@@ -242,6 +250,7 @@ export default function FormPanelField< Item >( {
 					data={ data }
 					onChange={ onChange }
 					defaultLayout={ defaultLayout }
+					labelPosition={ labelPosition }
 				/>
 			</div>
 		</HStack>
