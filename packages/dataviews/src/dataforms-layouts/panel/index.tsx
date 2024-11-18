@@ -212,6 +212,19 @@ export default function FormPanelField< Item >( {
 		);
 	}
 
+	if ( labelPosition === 'none' ) {
+		return (
+			<PanelDropdown
+				field={ field }
+				popoverAnchor={ popoverAnchor }
+				fieldDefinition={ fieldDefinition }
+				data={ data }
+				onChange={ onChange }
+				defaultLayout={ defaultLayout }
+			/>
+		);
+	}
+
 	// Defaults to label position side.
 	return (
 		<HStack

@@ -530,14 +530,14 @@ export interface SupportedLayouts {
 export type SimpleFormField = {
 	id: string;
 	layout?: 'regular' | 'panel';
-	labelPosition?: 'side' | 'top';
+	labelPosition?: 'side' | 'top' | 'none';
 };
 
 export type CombinedFormField = {
 	id?: string;
 	label?: string;
 	layout?: 'regular' | 'panel';
-	labelPosition?: 'side' | 'top';
+	labelPosition?: 'side' | 'top' | 'none';
 	children: Array< FormField | string >;
 };
 
