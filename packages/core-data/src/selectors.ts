@@ -408,8 +408,9 @@ export const getEntityRecord = createSelector(
 	}
 ) as GetEntityRecord;
 
-export const getTemplateAutoDraftId = ( state: State, target: string ) =>
-	state.templateAutoDraftId[ target ];
+export const getTemplateAutoDraftId = ( state: State, target: string ) => {
+	return state.templateAutoDraftId[ target ];
+};
 
 /**
  * Normalizes `recordKey`s that look like numeric IDs to numbers.

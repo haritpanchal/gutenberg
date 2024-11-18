@@ -32,7 +32,6 @@ const authorizedPostTypes = [ 'page', 'post' ];
 
 export function useResolveEditedEntity() {
 	const { params = {} } = useLocation();
-	const { postId, postType } = params;
 	const { hasLoadedAllDependencies, homepageId, postsPageId } = useSelect(
 		( select ) => {
 			const { getEntityRecord } = select( coreDataStore );
@@ -59,6 +58,19 @@ export function useResolveEditedEntity() {
 			};
 		},
 		[]
+	);
+
+	const [ postType, postId ] = useSelect(
+		( select ) => {
+			if ( params.postType !== '_wp_static_template' ) {
+				return [ params.postType, params.postId ];
+			}
+			return [
+				TEMPLATE_POST_TYPE,
+				select( coreDataStore ).getTemplateAutoDraftId( params.postId ),
+			];
+		},
+		[ params.postType, params.postId ]
 	);
 
 	/**
@@ -230,6 +242,10 @@ export function useResolveEditedEntity() {
 
 		return {};
 	}, [ homepageId, postType, postId ] );
+
+	if ( postType && ! postId ) {
+		return { isReady: false };
+	}
 
 	if ( postTypesWithoutParentTemplate.includes( postType ) && postId ) {
 		return { isReady: true, postType, postId, context };

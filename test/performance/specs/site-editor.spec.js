@@ -215,6 +215,7 @@ test.describe( 'Site Editor Performance', () => {
 				await admin.visitSiteEditor( {
 					// The old URL is supported in both previous versions and new versions.
 					path: '/wp_template',
+					activeView: 'Twenty Twenty-Four',
 				} );
 
 				// The Templates index page has changed, so we need to know which UI is in use in the branch.

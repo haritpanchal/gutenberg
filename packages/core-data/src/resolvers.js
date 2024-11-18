@@ -222,8 +222,8 @@ export const getEntityRecord =
 
 export const getTemplateAutoDraftId =
 	( target ) =>
-	async ( { select, dispatch } ) => {
-		const record = await select.getEntityRecord(
+	async ( { resolveSelect, dispatch } ) => {
+		const record = await resolveSelect.getEntityRecord(
 			'postType',
 			'_wp_static_template',
 			target
