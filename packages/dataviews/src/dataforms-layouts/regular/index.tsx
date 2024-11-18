@@ -109,7 +109,9 @@ export default function FormRegularField< Item >( {
 			data={ data }
 			field={ fieldDefinition }
 			onChange={ onChange }
-			hideLabelFromVision={ hideLabelFromVision }
+			hideLabelFromVision={
+				labelPosition === 'none' ? true : hideLabelFromVision
+			}
 		/>
 	);
 }
